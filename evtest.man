@@ -1,0 +1,38 @@
+.TH EVTEST 1 "Oct 21, 2009"
+.SH NAME
+evtest \- Input device event monitor
+.SH SYNOPSIS
+.B evtest 
+.I "/dev/input/eventX"
+
+.SH "DESCRIPTION"
+evtest displays information on the input device specified on the command
+line, including all the events supported by the device. It then monitors the
+device and displays all the events layer events generated.
+
+evtest needs to be able to read from the device; in most cases this means it
+must be run as root.
+
+evtest is commonly used to debug issues with input devices in X.Org. The
+output of evtest shows the information presented by the kernel; based on
+this information it can be determined whether a bug may be a kernel or an
+X.Org issue.
+.SH DIAGNOSTICS
+
+If evtest does not show any events even though the device is being used, the
+device may be grabbed by a process (EVIOCGRAB).  This is usually the case
+when debugging a synaptics device from within X. VT switching to a TTY or
+shutting down the X server terminates this grab and synaptics devices can be
+debugged.
+.SH SEE ALSO
+\fBinputattach\fP(1)
+
+.SH AUTHOR
+.B evtest
+was written by Vojtech Pavlik <vojtech@suse.cz>.
+
+This manual page was written by Stephen Kitt <steve@sk2.org>, based on that
+present in the
+.B lineakd
+package, for the Debian GNU/Linux system (but may be used by others).
+
