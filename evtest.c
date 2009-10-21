@@ -1,6 +1,4 @@
 /*
- * $Id: evtest.c,v 1.23 2005/02/06 13:51:42 vojtech Exp $
- *
  *  Copyright (c) 1999-2000 Vojtech Pavlik
  *
  *  Event device test program
