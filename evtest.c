@@ -225,7 +225,7 @@ char *keys[KEY_MAX + 1] = {
 	[KEY_DEL_LINE] = "Delete line",
 };
 
-char *absval[5] = { "Value", "Min  ", "Max  ", "Fuzz ", "Flat " };
+char *absval[6] = { "Value", "Min  ", "Max  ", "Fuzz ", "Flat ", "Resolution "};
 
 char *relatives[REL_MAX + 1] = {
 	[0 ... REL_MAX] = NULL,
@@ -313,7 +313,7 @@ int main (int argc, char **argv)
 	unsigned short id[4];
 	unsigned long bit[EV_MAX][NBITS(KEY_MAX)];
 	char name[256] = "Unknown";
-	int abs[5];
+	int abs[6] = {0};
 
 	if (argc < 2) {
 		printf("Usage: evtest /dev/input/eventX\n");
@@ -355,7 +355,7 @@ int main (int argc, char **argv)
 					printf("    Event code %d (%s)\n", j, names[i] ? (names[i][j] ? names[i][j] : "?") : "?");
 					if (i == EV_ABS) {
 						ioctl(fd, EVIOCGABS(j), abs);
-						for (k = 0; k < 5; k++)
+						for (k = 0; k < 6; k++)
 							if ((k < 3) || abs[k])
 								printf("      %s %6d\n", absval[k], abs[k]);
 					}
