@@ -12,4 +12,10 @@ if test x$HAVE_LIBXML = "xno"; then
 fi
 AM_CONDITIONAL(HAVE_LIBXML, [test "x$HAVE_LIBXML" = "xyes"])
 
+AC_PATH_PROG(XSLTPROC, [xsltproc])
+AM_CONDITIONAL([HAVE_XSLTPROC], [test "x$XSLTPROC" != "x"])
+if test "x$XSLTPROC" = "x"; then
+	AC_MSG_WARN([xsltproc not found, needed to generate devices.])
+fi
+
 AC_OUTPUT([Makefile])
