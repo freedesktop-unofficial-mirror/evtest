@@ -714,6 +714,8 @@ static int print_info(int fd, xmlTextWriterPtr writer)
 	call(print_capabilities(fd, writer));
 	end("info");
 
+	fprintf(stderr, "Capturing device '%s'.\n", name);
+
 	return 0;
 error:
 	return -1;
@@ -759,6 +761,8 @@ static int print_events(int fd, xmlTextWriterPtr writer)
 	sigact.sa_flags = 0;
 	sigaction(SIGINT, &sigact, &sigact);
 
+
+	fprintf(stderr, "Press Ctrl+C to stop.\n");
 	while(!stop)
 	{
 		rc = read(fd, &ev, sizeof(struct input_event));
