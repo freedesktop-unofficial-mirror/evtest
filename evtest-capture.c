@@ -721,11 +721,11 @@ error:
 	return -1;
 }
 
-static int init_xml(xmlTextWriterPtr *writer)
+static int init_xml(xmlTextWriterPtr *writer, const char *outfile)
 {
 	LIBXML_TEST_VERSION
 
-	*writer = xmlNewTextWriterFilename("evtest-capture.xml", 0);
+	*writer = xmlNewTextWriterFilename(outfile, 0);
 	if (!*writer)
 		return -1;
 
@@ -797,19 +797,24 @@ int main(int argc, char **argv)
 {
 	int fd = 0;
 	int rc;
+	char *outfile = "evtest-capture.xml";
 
 	xmlTextWriterPtr writer;
 
 	if (argc < 2) {
-		printf("Usage: %s /dev/input/eventX\n", argv[0]);
-		printf("Where X = input device number.\n");
+		printf("Usage: %s /dev/input/eventX [evtest-capture.xml]\n", argv[0]);
+		printf("Where X = input device number and\n");
+		printf("outfile.xml is the output file. Default: evtest-capture.xml\n");
 		return 1;
 	}
 
-	if ((fd = open(argv[argc - 1], O_RDONLY)) < 0)
+	if ((fd = open(argv[1], O_RDONLY)) < 0)
 		goto error;
 
-	init_xml(&writer);
+	if (argc >= 3)
+		outfile = argv[2];
+
+	init_xml(&writer, outfile);
 
 	start(BAD_CAST "evtest-capture");
 
