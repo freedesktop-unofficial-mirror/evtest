@@ -714,7 +714,7 @@ static int print_info(int fd, xmlTextWriterPtr writer)
 	call(print_capabilities(fd, writer));
 	end("info");
 
-	fprintf(stderr, "Capturing device '%s'.\n", name);
+	printf("Capturing device '%s'.\n", name);
 
 	return 0;
 error:
@@ -743,6 +743,7 @@ static void fini_xml(xmlTextWriterPtr writer)
 static void sig_handler(int signal)
 {
 	stop = 1;
+	printf("Stopping.\n");
 	return;
 }
 
@@ -762,7 +763,7 @@ static int print_events(int fd, xmlTextWriterPtr writer)
 	sigaction(SIGINT, &sigact, &sigact);
 
 
-	fprintf(stderr, "Press Ctrl+C to stop.\n");
+	printf("Press Ctrl+C to stop.\n");
 	while(!stop)
 	{
 		rc = read(fd, &ev, sizeof(struct input_event));
@@ -813,6 +814,8 @@ int main(int argc, char **argv)
 
 	if (argc >= 3)
 		outfile = argv[2];
+
+	printf("Writing to '%s'\n", outfile);
 
 	init_xml(&writer, outfile);
 
