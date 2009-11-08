@@ -158,8 +158,29 @@ int main (int argc, char **argv)
 ]]>
   </xsl:template>
 
+  <!-- Setup the required uinput bits to make the device look real
+       The funky comments at the start of the lines are just to improve
+       the output indenting.
+  -->
   <xsl:template match="event-type">
     if (ioctl(fd, UI_SET_EVBIT, <xsl:value-of select="@type"/>) == -1) goto error;
+<!-- --><xsl:for-each select="code">
+        <xsl:choose>
+            <xsl:when test="../@type = 'EV_KEY'">
+    if (ioctl(fd, UI_SET_KEYBIT, <xsl:value-of select="@value"/>) == -1) goto error;
+<!--     --></xsl:when>
+            <xsl:when test="../@type = 'EV_REL'">
+    if (ioctl(fd, UI_SET_RELBIT, <xsl:value-of select="@value"/>) == -1) goto error;
+<!--     --></xsl:when>
+            <xsl:when test="../@type = 'EV_ABS'">
+    if (ioctl(fd, UI_SET_ABSBIT, <xsl:value-of select="@value"/>) == -1) goto error;
+    dev->absmin[<xsl:value-of select="@value"/>] = <xsl:value-of select="@abs-min"/>;
+    dev->absmax[<xsl:value-of select="@value"/>] = <xsl:value-of select="@abs-max"/>;
+    dev->absfuzz[<xsl:value-of select="@value"/>] = <xsl:value-of select="@abs-fuzz"/>;
+    dev->absflat[<xsl:value-of select="@value"/>] = <xsl:value-of select="@abs-flat"/>;
+<!--         --></xsl:when>
+        </xsl:choose>
+    </xsl:for-each>
   </xsl:template>
 
   <xsl:template match="id">
