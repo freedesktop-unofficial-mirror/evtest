@@ -174,12 +174,16 @@ int main (int argc, char **argv)
 <!--     --></xsl:when>
             <xsl:when test="../@type = 'EV_ABS'">
     if (ioctl(fd, UI_SET_ABSBIT, <xsl:value-of select="@value"/>) == -1) goto error;
-    dev->absmin[<xsl:value-of select="@value"/>] = <xsl:value-of select="@abs-min"/>;
-    dev->absmax[<xsl:value-of select="@value"/>] = <xsl:value-of select="@abs-max"/>;
-    if (dev->absmin[<xsl:value-of select="@value"/>] == dev->absmax[<xsl:value-of select="@value"/>])
-        dev->absmax[<xsl:value-of select="@value"/>]++;
-    dev->absfuzz[<xsl:value-of select="@value"/>] = <xsl:value-of select="@abs-fuzz"/>;
-    dev->absflat[<xsl:value-of select="@value"/>] = <xsl:value-of select="@abs-flat"/>;
+    else {
+        int idx = <xsl:value-of select="@value"/>;
+        dev->absmin[idx] = <xsl:value-of select="@abs-min"/>;
+        dev->absmax[idx] = <xsl:value-of select="@abs-max"/>;
+        dev->absfuzz[idx] = <xsl:value-of select="@abs-fuzz"/>;
+        dev->absflat[idx] = <xsl:value-of select="@abs-flat"/>;
+
+        if (dev->absmin[idx] == dev->absmax[idx])
+            dev->absmax[idx]++;
+    }
 <!--         --></xsl:when>
         </xsl:choose>
     </xsl:for-each>
