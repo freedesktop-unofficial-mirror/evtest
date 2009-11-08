@@ -176,6 +176,8 @@ int main (int argc, char **argv)
     if (ioctl(fd, UI_SET_ABSBIT, <xsl:value-of select="@value"/>) == -1) goto error;
     dev->absmin[<xsl:value-of select="@value"/>] = <xsl:value-of select="@abs-min"/>;
     dev->absmax[<xsl:value-of select="@value"/>] = <xsl:value-of select="@abs-max"/>;
+    if (dev->absmin[<xsl:value-of select="@value"/>] == dev->absmax[<xsl:value-of select="@value"/>])
+        dev->absmax[<xsl:value-of select="@value"/>]++;
     dev->absfuzz[<xsl:value-of select="@value"/>] = <xsl:value-of select="@abs-fuzz"/>;
     dev->absflat[<xsl:value-of select="@value"/>] = <xsl:value-of select="@abs-flat"/>;
 <!--         --></xsl:when>
