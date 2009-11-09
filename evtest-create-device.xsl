@@ -146,10 +146,7 @@ int main (int argc, char **argv)
     init_signal();
 
     printf("Device created. Press CTRL+C to terminate.\n");
-    while (!stop) {
-        if (run(fd))
-            break;
-    }
+    run(fd);
 
     cleanup_uinput();
 
