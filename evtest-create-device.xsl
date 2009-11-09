@@ -59,6 +59,8 @@
 static int fd   = -1;
 static int stop = 0;
 
+static void send_event(int fd, int type, int code, int value);
+
 static int setup(struct uinput_user_dev *dev, int fd)
 {
 ]]>
@@ -74,6 +76,9 @@ error:
 
 static int run(int fd)
 {
+]]>
+<xsl:apply-templates select="events"/>
+<![CDATA[
     return 0;
 }
 
@@ -134,6 +139,18 @@ static void cleanup_uinput(void)
     fd = -1;
 }
 
+static void send_event(int fd, int type, int code, int value)
+{
+    struct input_event event;
+
+    event.type  = type;
+    event.code  = code;
+    event.value = value;
+    gettimeofday(&event.time, NULL);
+
+    if (write(fd, &event, sizeof(event)) < sizeof(event))
+        perror("Send event failed.");
+}
 
 int main (int argc, char **argv)
 {
@@ -194,5 +211,11 @@ int main (int argc, char **argv)
     dev->id.version = <xsl:value-of select="@version"/>;
   </xsl:template>
 
+  <!-- code replaying the events -->
+
+  <xsl:template match="events">
+      <xsl:for-each select="event">
+    send_event(fd, <xsl:value-of select="@type"/>, <xsl:value-of select="@code"/>, <xsl:value-of select="@value"/>);</xsl:for-each>
+  </xsl:template>
 </xsl:stylesheet>
 
