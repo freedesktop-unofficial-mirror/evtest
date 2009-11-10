@@ -28,6 +28,7 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <signal.h>
+#include <dirent.h>
 
 #include <libxml/encoding.h>
 #include <libxml/xmlwriter.h>
@@ -794,22 +795,84 @@ error:
 	return -1;
 }
 
+
+#define DEV_INPUT_EVENT "/dev/input"
+#define EVENT_DEV_NAME "event"
+
+
+/* filter for the AutoDevProbe scandir on /dev/input */
+static int EventDevOnly(const struct dirent *dir) {
+	return strncmp(EVENT_DEV_NAME, dir->d_name, 5) == 0;
+}
+
+/* Scans all /dev/input/event* and returns the number of the one to open */
+static int scan_devices(void)
+{
+    struct dirent **namelist;
+    int i, ndev, devnum;
+
+    ndev = scandir(DEV_INPUT_EVENT, &namelist, EventDevOnly, alphasort);
+    if (ndev <= 0)
+	    return -1;
+
+    printf("Available devices:\n");
+
+    for (i = 0; i < ndev; i++)
+    {
+		char fname[64];
+		int fd = -1;
+		char name[256] = "???";
+
+		sprintf(fname, "%s/%s", DEV_INPUT_EVENT, namelist[i]->d_name);
+		fd = open(fname, O_RDONLY);
+		if (fd < 0)
+			continue;
+		ioctl(fd, EVIOCGNAME(sizeof(name)), name);
+
+		printf("%s:	%s\n", fname, name);
+		close(fd);
+		free(namelist[i]);
+    }
+
+    printf("Select the device event number [0-%d]: ", ndev - 1);
+    scanf("%d", &devnum);
+
+    if (devnum >= ndev || devnum < 0)
+	    return -1;
+
+    return devnum;
+}
+
+static void usage(void)
+{
+	printf("Usage: evtest-capture /dev/input/eventX [evtest-capture.xml]\n");
+	printf("Where X = input device number and\n");
+	printf("outfile.xml is the output file. Default: evtest-capture.xml\n\n");
+}
+
 int main(int argc, char **argv)
 {
 	int fd = 0;
 	int rc;
 	char *outfile = "evtest-capture.xml";
+	char infile[64];
 
 	xmlTextWriterPtr writer = NULL;
 
 	if (argc < 2) {
-		printf("Usage: %s /dev/input/eventX [evtest-capture.xml]\n", argv[0]);
-		printf("Where X = input device number and\n");
-		printf("outfile.xml is the output file. Default: evtest-capture.xml\n");
-		return 1;
-	}
+		int dev;
+		dev = scan_devices();
+		if (dev == -1)
+		{
+			usage();
+			return 1;
+		}
 
-	if ((fd = open(argv[1], O_RDONLY)) < 0)
+		sprintf(infile, "%s/%s%d", DEV_INPUT_EVENT, EVENT_DEV_NAME, dev);
+	} else
+		strcpy(infile, argv[1]);
+
+	if ((fd = open(infile, O_RDONLY)) < 0)
 		goto error;
 
 	if (argc >= 3)
