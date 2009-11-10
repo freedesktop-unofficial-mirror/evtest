@@ -50,14 +50,12 @@
 #include <string.h>
 #include <errno.h>
 #include <fcntl.h>
-#include <signal.h>
 #include <unistd.h>
 #include <linux/input.h>
 #include <linux/uinput.h>
 #include <dlfcn.h>
 
 static int fd   = -1;
-static int stop = 0;
 
 static void send_event(int fd, int type, int code, int value, int sec, int usec);
 
@@ -82,27 +80,6 @@ static int run(int fd)
     return 0;
 }
 
-static void sighandler(int signum)
-{
-    printf("Stopping.\n");
-    stop = 1;
-}
-
-static void init_signal(void)
-{
-    struct sigaction action;
-    sigset_t mask;
-
-    sigfillset(&mask);
-
-    action.sa_handler = sighandler;
-    action.sa_mask    = mask;
-    action.sa_flags   = 0;
-
-    sigaction(SIGTERM, &action, NULL);
-    sigaction(SIGINT, &action, NULL);
-    sigprocmask(SIG_UNBLOCK, &mask, 0);
-}
 static int init_uinput()
 {
     struct uinput_user_dev dev;
@@ -172,8 +149,6 @@ int main (int argc, char **argv)
                 "Failed to initialize /dev/input/uinput. Exiting.\n");
         return -1;
     }
-
-    init_signal();
 
     printf("Device created. Press CTRL+C to terminate.\n");
     run(fd);
