@@ -861,6 +861,10 @@ int main(int argc, char **argv)
 
 	if (argc < 2) {
 		int dev;
+
+		if (getuid() != 0)
+			printf("Not running as root, no devices may be available.\n");
+
 		dev = scan_devices();
 		if (dev == -1)
 		{
