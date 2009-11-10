@@ -800,7 +800,7 @@ int main(int argc, char **argv)
 	int rc;
 	char *outfile = "evtest-capture.xml";
 
-	xmlTextWriterPtr writer;
+	xmlTextWriterPtr writer = NULL;
 
 	if (argc < 2) {
 		printf("Usage: %s /dev/input/eventX [evtest-capture.xml]\n", argv[0]);
@@ -829,9 +829,10 @@ int main(int argc, char **argv)
 	return 0;
 
 error:
-	xmlTextWriterEndDocument(writer);
+	if (writer)
+		xmlTextWriterEndDocument(writer);
 	xmlCleanupParser();
-	perror("Failed with error:");
+	perror("Failed with error");
 	return 1;
 }
 
