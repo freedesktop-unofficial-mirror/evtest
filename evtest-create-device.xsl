@@ -199,6 +199,9 @@ int main (int argc, char **argv)
             <xsl:when test="../@type = 'EV_REL'">
     if (ioctl(fd, UI_SET_RELBIT, <xsl:value-of select="@value"/>) == -1) goto error;
 <!--     --></xsl:when>
+            <xsl:when test="../@type = 'EV_MSC'">
+    if (ioctl(fd, UI_SET_MSCBIT, <xsl:value-of select="@value"/>) == -1) goto error;
+<!--     --></xsl:when>
             <xsl:when test="../@type = 'EV_ABS'">
     if (ioctl(fd, UI_SET_ABSBIT, <xsl:value-of select="@value"/>) == -1) goto error;
     else {
