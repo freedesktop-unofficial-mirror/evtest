@@ -59,7 +59,7 @@
 static int fd   = -1;
 static int stop = 0;
 
-static void send_event(int fd, int type, int code, int value);
+static void send_event(int fd, int type, int code, int value, int sec, int usec);
 
 static int setup(struct uinput_user_dev *dev, int fd)
 {
@@ -139,17 +139,30 @@ static void cleanup_uinput(void)
     fd = -1;
 }
 
-static void send_event(int fd, int type, int code, int value)
+static void send_event(int fd, int type, int code, int value, int sec, int usec)
 {
+    static int sec_offset = -1;
+    static long last_time = -1;
+    long newtime;
     struct input_event event;
 
     event.type  = type;
     event.code  = code;
     event.value = value;
-    gettimeofday(&event.time, NULL);
+
+    if (sec_offset == -1)
+        sec_offset = sec;
+
+    sec -= sec_offset;
+    newtime = sec * 1000000 + usec;
+
+    if (last_time > 0)
+        usleep(newtime - last_time);
 
     if (write(fd, &event, sizeof(event)) < sizeof(event))
         perror("Send event failed.");
+
+    last_time = newtime;
 }
 
 int main (int argc, char **argv)
@@ -212,10 +225,10 @@ int main (int argc, char **argv)
   </xsl:template>
 
   <!-- code replaying the events -->
-
   <xsl:template match="events">
       <xsl:for-each select="event">
-    send_event(fd, <xsl:value-of select="@type"/>, <xsl:value-of select="@code"/>, <xsl:value-of select="@value"/>);</xsl:for-each>
+    send_event(fd, <xsl:value-of select="@type"/>, <xsl:value-of select="@code"/>, <xsl:value-of select="@value"/>, <xsl:value-of select="@sec"/>, <xsl:value-of select="@usec"/>);</xsl:for-each>
   </xsl:template>
+
 </xsl:stylesheet>
 
