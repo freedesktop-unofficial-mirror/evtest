@@ -27,6 +27,7 @@
 
 #include <stdint.h>
 
+#include <linux/version.h>
 #include <linux/input.h>
 
 #include <string.h>
@@ -301,6 +302,7 @@ char *absolutes[ABS_MAX + 1] = {
 	[ABS_DISTANCE] = "Distance",	[ABS_TILT_X] = "XTilt",
 	[ABS_TILT_Y] = "YTilt",		[ABS_TOOL_WIDTH] = "Tool Width",
 	[ABS_VOLUME] = "Volume",	[ABS_MISC] = "Misc",
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,30)
 	[ABS_MT_TOUCH_MAJOR] = "Touch Major",
 	[ABS_MT_TOUCH_MINOR] = "Touch Minor",
 	[ABS_MT_WIDTH_MAJOR] = "Width Major",
@@ -311,6 +313,7 @@ char *absolutes[ABS_MAX + 1] = {
 	[ABS_MT_TOOL_TYPE] = "Tool Type",
 	[ABS_MT_BLOB_ID] = "Blob ID",
 	[ABS_MT_TRACKING_ID] = "Tracking ID",
+#endif
 
 };
 
