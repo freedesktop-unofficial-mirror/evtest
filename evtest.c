@@ -261,7 +261,7 @@ char *keys[KEY_MAX + 1] = {
 	[KEY_NUMERIC_6] = "Numeric 6",		[KEY_NUMERIC_7] = "Numeric 7",
 	[KEY_NUMERIC_8] = "Numeric 8",		[KEY_NUMERIC_9] = "Numeric 9",
 	[KEY_NUMERIC_STAR] = "Numeric *",	[KEY_NUMERIC_POUND] = "Numeric #",
-	[KEY_RFKILL] = "RF Kill",		[KEY_BATTERY] = "Battery",
+	[KEY_BATTERY] = "Battery",
 	[KEY_BLUETOOTH] = "Bluetooth",		[KEY_BRIGHTNESS_CYCLE] = "Brightness Cycle",
 	[KEY_BRIGHTNESS_ZERO] = "Brightness Zero", [KEY_DASHBOARD] = "Dashboard",
 	[KEY_DISPLAY_OFF] = "Display Off",	[KEY_DOCUMENTS] = "Documents",
