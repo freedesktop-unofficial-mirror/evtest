@@ -10,4 +10,4 @@ endif
 
 
 man1_MANS = evtest.man
-EXTRA_DIST = $(man1_MANS) evtest-generate-device.xsl
+EXTRA_DIST = $(man1_MANS) evtest-generate-device.xsl INSTALL

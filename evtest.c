@@ -3,6 +3,9 @@
  *  Copyright (c) 2009 Red Hat, Inc
  *
  *  Event device test program
+ *
+ * See INSTALL for installation details or manually compile with
+ * gcc -o evtest evtest.c
  */
 
 /*

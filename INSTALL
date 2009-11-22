@@ -1,0 +1,15 @@
+Manual compilation (if autotools are not available):
+$> gcc -o evtest evtest.c
+
+Otherwise, run the following commands.
+
+$> autoreconf -iv
+$> configure --prefix=/usr 
+$> make 
+$> make install
+
+Adjust the prefix as necessary, on most distributions /usr is fine.
+evtest itself has no requirements other than the C compiler, if you need
+evtest-capture, install the libxml-2.0 development files.
+
+
