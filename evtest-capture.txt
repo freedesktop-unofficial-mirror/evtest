@@ -1,0 +1,49 @@
+EVTEST-CAPTURE(1)
+=================
+
+NAME
+----
+
+     evtest-capture - Input device event capture program
+
+SYNOPSIS
+--------
+     evtest-capture "/dev/input/eventX" [evtest-capture.xml]
+
+DESCRIPTION
+-----------
+evtest-capture captures the information and events from the input device
+specified on the command line and writes it to the xml file given. If no
+filename is given for the output file, evtest-capture.xml is chosen as
+default.
+
+evtest-capture needs to be able to read from the device; in most cases this means it
+must be run as root.
+
+Together with with evtest-create-device.xsl, a simple uinput-based software
+input device can be created that replays the events as if the same input was
+performed on the physical device. This can be useful to replicate bugs with
+input devices in upper layers of the stack.
+
+To convert evtest-capture.xml into such a uinput device, run:
+
+     xsltproc evtest-create-device.xls evtest-capture.xml > mydevice.c
+     gcc -o mydevice mydevice.c
+     ./mydevice
+
+
+DIAGNOSTICS
+-----------
+If evtest-capture does not see any events even though the device is being
+used, the device may be grabbed by a process (EVIOCGRAB).  This is usually the
+case when debugging a synaptics device from within X. VT switching to a TTY or
+shutting down the X server terminates this grab and synaptics devices can be
+debugged.
+
+SEE ALSO
+--------
+evtest(1)
+
+AUTHOR
+------
+evtest-capture was written by Peter Hutterer <peter.hutterer@redhat.com>.
