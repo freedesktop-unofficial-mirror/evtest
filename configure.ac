@@ -1,5 +1,5 @@
 AC_PREREQ([2.57])
-AC_INIT(evtest,[1.24], [], evtest)
+AC_INIT(evtest,[1.25], [], evtest)
 AM_INIT_AUTOMAKE([foreign dist-bzip2])
 
 AM_CONFIG_HEADER(config.h)
