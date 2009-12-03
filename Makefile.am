@@ -8,9 +8,11 @@ AM_CFLAGS = $(XML_CFLAGS)
 
 evtest_capture_LDADD = $(XML_LIBS)
 man_pages_src += evtest-capture.txt
+evtest_capturedir = $(datadir)/evtest
+dist_evtest_capture_DATA = evtest-create-device.xsl
 endif
 
-EXTRA_DIST = evtest-create-device.xsl INSTALL
+EXTRA_DIST = INSTALL
 
 # man page generation.
 if HAVE_DOCTOOLS
