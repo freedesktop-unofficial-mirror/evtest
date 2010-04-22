@@ -29,6 +29,7 @@
 #include <stdio.h>
 #include <signal.h>
 #include <dirent.h>
+#include <errno.h>
 
 #include <libxml/encoding.h>
 #include <libxml/xmlwriter.h>
@@ -768,6 +769,9 @@ static int print_events(int fd, xmlTextWriterPtr writer)
 	while(!stop)
 	{
 		rc = read(fd, &ev, sizeof(struct input_event));
+		if (rc == -1 && errno == EINTR)
+			continue;
+
 		if (rc < sizeof(ev))
 			goto error;
 
