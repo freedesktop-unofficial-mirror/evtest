@@ -852,7 +852,7 @@ static void usage(void)
 
 int main(int argc, char **argv)
 {
-	int fd = 0;
+	int fd = -1;
 	int rc;
 	char *outfile = "evtest-capture.xml";
 	char infile[64];
@@ -896,9 +896,12 @@ int main(int argc, char **argv)
 	return 0;
 
 error:
-	if (writer)
-		xmlTextWriterEndDocument(writer);
-	xmlCleanupParser();
+	if (fd >= 0)
+	{
+		if (writer)
+			xmlTextWriterEndDocument(writer);
+		xmlCleanupParser();
+	}
 	perror("Failed with error");
 	return 1;
 }
