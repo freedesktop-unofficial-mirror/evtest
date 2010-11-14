@@ -318,6 +318,12 @@ char *absolutes[ABS_MAX + 1] = {
 	[ABS_MT_BLOB_ID] = "Blob ID",
 	[ABS_MT_TRACKING_ID] = "Tracking ID",
 #endif
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,35)
+	[ABS_MT_PRESSURE] = "Pressure",
+#endif
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,36)
+	[ABS_MT_SLOT] = "Slot",
+#endif
 
 };
 
