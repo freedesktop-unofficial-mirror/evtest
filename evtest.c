@@ -1,6 +1,6 @@
 /*
  *  Copyright (c) 1999-2000 Vojtech Pavlik
- *  Copyright (c) 2009 Red Hat, Inc
+ *  Copyright (c) 2009-2011 Red Hat, Inc
  *
  *  Event device test program
  *
@@ -354,6 +354,14 @@ char *sounds[SND_MAX + 1] = {
 	[SND_TONE] = "Tone"
 };
 
+char *syns[3] = {
+	[SYN_REPORT] = "Report Sync",
+	[SYN_CONFIG] = "Config Sync",
+#ifdef SYN_MT_REPORT
+	[SYN_MT_REPORT] = "MT Sync"
+#endif
+};
+
 char **names[EV_MAX + 1] = {
 	[0 ... EV_MAX] = NULL,
 	[EV_SYN] = events,			[EV_KEY] = keys,
@@ -442,7 +450,7 @@ int main (int argc, char **argv)
 
 			if (ev[i].type == EV_SYN) {
 				printf("Event: time %ld.%06ld, -------------- %s ------------\n",
-					ev[i].time.tv_sec, ev[i].time.tv_usec, ev[i].code ? "Config Sync" : "Report Sync" );
+					ev[i].time.tv_sec, ev[i].time.tv_usec, syns[ev[i].code]);
 			} else if (ev[i].type == EV_MSC && (ev[i].code == MSC_RAW || ev[i].code == MSC_SCAN)) {
 				printf("Event: time %ld.%06ld, type %d (%s), code %d (%s), value %02x\n",
 					ev[i].time.tv_sec, ev[i].time.tv_usec, ev[i].type,
