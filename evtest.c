@@ -433,7 +433,7 @@ int main (int argc, char **argv)
 		rd = read(fd, ev, sizeof(struct input_event) * 64);
 
 		if (rd < (int) sizeof(struct input_event)) {
-			printf("yyy\n");
+			printf("expected %d bytes, got %d\n", (int) sizeof(struct input_event), rd);
 			perror("\nevtest: error reading");
 			return 1;
 		}
