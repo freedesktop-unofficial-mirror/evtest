@@ -11,18 +11,18 @@
 /*
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or 
+ * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- * 
+ *
  * Should you need to contact me, the author, you can do so either by
  * e-mail - mail your message to <vojtech@ucw.cz>, or by paper mail:
  * Vojtech Pavlik, Simunkova 1594, Prague 8, 182 00 Czech Republic
@@ -287,8 +287,8 @@ char *relatives[REL_MAX + 1] = {
 	[0 ... REL_MAX] = NULL,
 	[REL_X] = "X",			[REL_Y] = "Y",
 	[REL_Z] = "Z",			[REL_HWHEEL] = "HWheel",
-	[REL_DIAL] = "Dial",		[REL_WHEEL] = "Wheel", 
-	[REL_MISC] = "Misc",	
+	[REL_DIAL] = "Dial",		[REL_WHEEL] = "Wheel",
+	[REL_MISC] = "Misc",
 };
 
 char *absolutes[ABS_MAX + 1] = {
@@ -336,9 +336,9 @@ char *misc[MSC_MAX + 1] = {
 
 char *leds[LED_MAX + 1] = {
 	[0 ... LED_MAX] = NULL,
-	[LED_NUML] = "NumLock",		[LED_CAPSL] = "CapsLock", 
+	[LED_NUML] = "NumLock",		[LED_CAPSL] = "CapsLock",
 	[LED_SCROLLL] = "ScrollLock",	[LED_COMPOSE] = "Compose",
-	[LED_KANA] = "Kana",		[LED_SLEEP] = "Sleep", 
+	[LED_KANA] = "Kana",		[LED_SLEEP] = "Sleep",
 	[LED_SUSPEND] = "Suspend",	[LED_MUTE] = "Mute",
 	[LED_MISC] = "Misc",
 };
@@ -414,7 +414,7 @@ int main (int argc, char **argv)
 			printf("  Event type %d (%s)\n", i, events[i] ? events[i] : "?");
 			if (!i) continue;
 			ioctl(fd, EVIOCGBIT(i, KEY_MAX), bit[i]);
-			for (j = 0; j < KEY_MAX; j++) 
+			for (j = 0; j < KEY_MAX; j++)
 				if (test_bit(j, bit[i])) {
 					printf("    Event code %d (%s)\n", j, names[i] ? (names[i][j] ? names[i][j] : "?") : "?");
 					if (i == EV_ABS) {
@@ -425,7 +425,7 @@ int main (int argc, char **argv)
 					}
 				}
 		}
-		
+
 
 	printf("Testing ... (interrupt to exit)\n");
 
@@ -457,7 +457,7 @@ int main (int argc, char **argv)
 					ev[i].code,
 					names[ev[i].type] ? (names[ev[i].type][ev[i].code] ? names[ev[i].type][ev[i].code] : "?") : "?",
 					ev[i].value);
-			}	
+			}
 
 	}
 }
