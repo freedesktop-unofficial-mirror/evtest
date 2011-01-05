@@ -446,26 +446,27 @@ int main (int argc, char **argv)
 			return 1;
 		}
 
-		for (i = 0; i < rd / sizeof(struct input_event); i++)
+		for (i = 0; i < rd / sizeof(struct input_event); i++) {
+			printf("Event: time %ld.%06ld, ", ev[i].time.tv_sec, ev[i].time.tv_usec);
 
 			if (ev[i].type == EV_SYN) {
-				printf("Event: time %ld.%06ld, -------------- %s ------------\n",
-					ev[i].time.tv_sec, ev[i].time.tv_usec, syns[ev[i].code]);
+				printf("-------------- %s ------------\n", syns[ev[i].code]);
 			} else if (ev[i].type == EV_MSC && (ev[i].code == MSC_RAW || ev[i].code == MSC_SCAN)) {
-				printf("Event: time %ld.%06ld, type %d (%s), code %d (%s), value %02x\n",
-					ev[i].time.tv_sec, ev[i].time.tv_usec, ev[i].type,
+				printf("type %d (%s), code %d (%s), value %02x\n",
+					ev[i].type,
 					events[ev[i].type] ? events[ev[i].type] : "?",
 					ev[i].code,
 					names[ev[i].type] ? (names[ev[i].type][ev[i].code] ? names[ev[i].type][ev[i].code] : "?") : "?",
 					ev[i].value);
 			} else {
-				printf("Event: time %ld.%06ld, type %d (%s), code %d (%s), value %d\n",
-					ev[i].time.tv_sec, ev[i].time.tv_usec, ev[i].type,
+				printf("type %d (%s), code %d (%s), value %d\n",
+					ev[i].type,
 					events[ev[i].type] ? events[ev[i].type] : "?",
 					ev[i].code,
 					names[ev[i].type] ? (names[ev[i].type][ev[i].code] ? names[ev[i].type][ev[i].code] : "?") : "?",
 					ev[i].value);
 			}
+		}
 
 	}
 }
