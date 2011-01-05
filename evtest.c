@@ -294,6 +294,30 @@ char *keys[KEY_MAX + 1] = {
 	[BTN_TOOL_TRIPLETAP] = "Tool Tripletap", [BTN_TOOL_QUADTAP] = "Tool Quadtap",
 	[BTN_GEAR_DOWN] = "WheelBtn",
 	[BTN_GEAR_UP] = "Gear up",
+
+#ifdef BTN_TRIGGER_HAPPY
+	[BTN_TRIGGER_HAPPY1] = "Trigger Happy 1",	[BTN_TRIGGER_HAPPY11] = "Trigger Happy 11",
+	[BTN_TRIGGER_HAPPY2] = "Trigger Happy 2",	[BTN_TRIGGER_HAPPY12] = "Trigger Happy 12",
+	[BTN_TRIGGER_HAPPY3] = "Trigger Happy 3",	[BTN_TRIGGER_HAPPY13] = "Trigger Happy 13",
+	[BTN_TRIGGER_HAPPY4] = "Trigger Happy 4",	[BTN_TRIGGER_HAPPY14] = "Trigger Happy 14",
+	[BTN_TRIGGER_HAPPY5] = "Trigger Happy 5",	[BTN_TRIGGER_HAPPY15] = "Trigger Happy 15",
+	[BTN_TRIGGER_HAPPY6] = "Trigger Happy 6",	[BTN_TRIGGER_HAPPY16] = "Trigger Happy 16",
+	[BTN_TRIGGER_HAPPY7] = "Trigger Happy 7",	[BTN_TRIGGER_HAPPY17] = "Trigger Happy 17",
+	[BTN_TRIGGER_HAPPY8] = "Trigger Happy 8",	[BTN_TRIGGER_HAPPY18] = "Trigger Happy 18",
+	[BTN_TRIGGER_HAPPY9] = "Trigger Happy 9",	[BTN_TRIGGER_HAPPY19] = "Trigger Happy 19",
+	[BTN_TRIGGER_HAPPY10] = "Trigger Happy 10",	[BTN_TRIGGER_HAPPY20] = "Trigger Happy 20",
+
+	[BTN_TRIGGER_HAPPY21] = "Trigger Happy 21",	[BTN_TRIGGER_HAPPY31] = "Trigger Happy 31",
+	[BTN_TRIGGER_HAPPY22] = "Trigger Happy 22",	[BTN_TRIGGER_HAPPY32] = "Trigger Happy 32",
+	[BTN_TRIGGER_HAPPY23] = "Trigger Happy 23",	[BTN_TRIGGER_HAPPY33] = "Trigger Happy 33",
+	[BTN_TRIGGER_HAPPY24] = "Trigger Happy 24",	[BTN_TRIGGER_HAPPY34] = "Trigger Happy 34",
+	[BTN_TRIGGER_HAPPY25] = "Trigger Happy 25",	[BTN_TRIGGER_HAPPY35] = "Trigger Happy 35",
+	[BTN_TRIGGER_HAPPY26] = "Trigger Happy 26",	[BTN_TRIGGER_HAPPY36] = "Trigger Happy 36",
+	[BTN_TRIGGER_HAPPY27] = "Trigger Happy 27",	[BTN_TRIGGER_HAPPY37] = "Trigger Happy 37",
+	[BTN_TRIGGER_HAPPY28] = "Trigger Happy 28",	[BTN_TRIGGER_HAPPY38] = "Trigger Happy 38",
+	[BTN_TRIGGER_HAPPY29] = "Trigger Happy 29",	[BTN_TRIGGER_HAPPY39] = "Trigger Happy 39",
+	[BTN_TRIGGER_HAPPY30] = "Trigger Happy 30",	[BTN_TRIGGER_HAPPY40] = "Trigger Happy 40",
+#endif
 };
 
 char *absval[6] = { "Value", "Min  ", "Max  ", "Fuzz ", "Flat ", "Resolution "};
