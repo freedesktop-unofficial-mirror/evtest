@@ -280,7 +280,10 @@ char *keys[KEY_MAX + 1] = {
 	[KEY_SCREENLOCK] = "Screen Lock",	[KEY_SWITCHVIDEOMODE] = "Switch Video Mode",
 	[KEY_UWB] = "UWB",			[KEY_VIDEO_NEXT] = "Video Next",
 	[KEY_VIDEO_PREV] = "Video Prev",	[KEY_WIMAX] = "WIMAX",
-	[KEY_WLAN] = "WLAN"
+	[KEY_WLAN] = "WLAN",
+#ifdef KEY_RFKILL
+	[KEY_RFKILL] = "RF kill"
+#endif
 
 };
 
