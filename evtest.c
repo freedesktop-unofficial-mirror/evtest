@@ -41,6 +41,9 @@
 #ifndef EV_SYN
 #define EV_SYN 0
 #endif
+#ifndef SYN_MT_REPORT
+#define SYN_MT_REPORT 2
+#endif
 
 char *events[EV_MAX + 1] = {
 	[0 ... EV_MAX] = NULL,
@@ -450,7 +453,10 @@ int main (int argc, char **argv)
 			printf("Event: time %ld.%06ld, ", ev[i].time.tv_sec, ev[i].time.tv_usec);
 
 			if (ev[i].type == EV_SYN) {
-				printf("-------------- %s ------------\n", syns[ev[i].code]);
+				if (ev[i].code == SYN_MT_REPORT)
+					printf("++++++++++++++ %s ++++++++++++\n", syns[ev[i].code]);
+				else
+					printf("-------------- %s ------------\n", syns[ev[i].code]);
 			} else {
 				printf("type %d (%s), code %d (%s), ",
 					ev[i].type,
