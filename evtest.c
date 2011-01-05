@@ -282,7 +282,10 @@ char *keys[KEY_MAX + 1] = {
 	[KEY_VIDEO_PREV] = "Video Prev",	[KEY_WIMAX] = "WIMAX",
 	[KEY_WLAN] = "WLAN",
 #ifdef KEY_RFKILL
-	[KEY_RFKILL] = "RF kill"
+	[KEY_RFKILL] = "RF kill",
+#endif
+#ifdef KEY_WPS_BUTTON
+	[KEY_WPS_BUTTON] = "WPS Button"
 #endif
 
 };
