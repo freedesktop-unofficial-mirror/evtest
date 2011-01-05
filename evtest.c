@@ -285,7 +285,12 @@ char *keys[KEY_MAX + 1] = {
 	[KEY_RFKILL] = "RF kill",
 #endif
 #ifdef KEY_WPS_BUTTON
-	[KEY_WPS_BUTTON] = "WPS Button"
+	[KEY_WPS_BUTTON] = "WPS Button",
+#endif
+#ifdef KEY_TOUCHPAD_TOGGLE
+	[KEY_TOUCHPAD_TOGGLE] = "Touchpad Toggle",
+	[KEY_TOUCHPAD_ON] = "Touchpad On",
+	[KEY_TOUCHPAD_OFF] = "Touchpad Off",
 #endif
 
 };
