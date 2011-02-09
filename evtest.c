@@ -41,6 +41,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <dirent.h>
+#include <errno.h>
 
 #define BITS_PER_LONG (sizeof(long) * 8)
 #define NBITS(x) ((((x)-1)/BITS_PER_LONG)+1)
@@ -627,6 +628,10 @@ int main (int argc, char **argv)
 
 	if ((fd = open(filename, O_RDONLY)) < 0) {
 		perror("evtest");
+		if (errno == EACCES && getuid() != 0)
+			fprintf(stderr, "You do not have access to %s. Try "
+					"running as root instead.\n",
+					filename);
 		return 1;
 	}
 
