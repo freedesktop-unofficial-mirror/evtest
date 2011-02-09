@@ -449,16 +449,18 @@ static int is_event_device(const struct dirent *dir) {
  * Scans all /dev/input/event*, display them and ask the user which one to
  * open.
  *
- * @return The event device number of the device file selected.
+ * @return The event device file name of the device file selected. This
+ * string is allocated and must be freed by the caller.
  */
-static int scan_devices(void)
+static char* scan_devices(void)
 {
 	struct dirent **namelist;
 	int i, ndev, devnum;
+	char *filename;
 
 	ndev = scandir(DEV_INPUT_EVENT, &namelist, is_event_device, alphasort);
 	if (ndev <= 0)
-		return -1;
+		return NULL;
 
 	fprintf(stderr, "Available devices:\n");
 
@@ -484,9 +486,13 @@ static int scan_devices(void)
 	scanf("%d", &devnum);
 
 	if (devnum >= ndev || devnum < 0)
-		return -1;
+		return NULL;
 
-	return devnum;
+	asprintf(&filename, "%s/%s%d",
+		 DEV_INPUT_EVENT, EVENT_DEV_NAME,
+		 devnum);
+
+	return filename;
 }
 
 /**
@@ -502,29 +508,24 @@ static void usage(void)
  * Parse the commandline arguments.
  *
  * @return The filename of the device file to open, or NULL in case of
- * error.
+ * error. This string is allocated and must be freed by the caller.
  */
 static char* parse_args(int argc, char **argv)
 {
 	char *filename;
 
 	if (argc < 2) {
-		int dev;
-
 		fprintf(stderr, "No device specified, trying to scan all of %s/%s*\n",
 			DEV_INPUT_EVENT, EVENT_DEV_NAME);
 
 		if (getuid() != 0)
 			fprintf(stderr, "Not running as root, no devices may be available.\n");
 
-		dev = scan_devices();
-		if (dev == -1)
-		{
+		filename = scan_devices();
+		if (!filename) {
 			usage();
 			return NULL;
 		}
-
-		asprintf(&filename, "%s/%s%d", DEV_INPUT_EVENT, EVENT_DEV_NAME, dev);
 	} else
 		filename = strdup(argv[argc - 1]);
 
