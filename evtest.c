@@ -28,6 +28,8 @@
  * Vojtech Pavlik, Simunkova 1594, Prague 8, 182 00 Czech Republic
  */
 
+#define _GNU_SOURCE /* for asprintf */
+#include <stdio.h>
 #include <stdint.h>
 
 #include <linux/version.h>
@@ -473,16 +475,9 @@ static void usage(void)
 	printf("Where X = input device number\n");
 }
 
-int main (int argc, char **argv)
+static char* parse_args(int argc, char **argv)
 {
-	int fd, rd, i, j, k;
-	struct input_event ev[64];
-	int version;
-	unsigned short id[4];
-	unsigned long bit[EV_MAX][NBITS(KEY_MAX)];
-	char name[256] = "Unknown";
-	int abs[6] = {0};
-	char filename[64] = {0};
+	char *filename;
 
 	if (argc < 2) {
 		int dev;
@@ -497,18 +492,39 @@ int main (int argc, char **argv)
 		if (dev == -1)
 		{
 			usage();
-			return 1;
+			return NULL;
 		}
 
-		snprintf(filename, sizeof(filename),
-			 "%s/%s%d", DEV_INPUT_EVENT, EVENT_DEV_NAME, dev);
+		asprintf(&filename, "%s/%s%d", DEV_INPUT_EVENT, EVENT_DEV_NAME, dev);
 	} else
-		strncpy(filename, argv[argc - 1], sizeof(filename));
+		filename = strdup(argv[argc - 1]);
+
+	return filename;
+}
+
+
+int main (int argc, char **argv)
+{
+	int fd, rd, i, j, k;
+	struct input_event ev[64];
+	int version;
+	unsigned short id[4];
+	unsigned long bit[EV_MAX][NBITS(KEY_MAX)];
+	char name[256] = "Unknown";
+	int abs[6] = {0};
+	char *filename;
+
+	filename = parse_args(argc, argv);
+
+	if (!filename)
+		return 1;
 
 	if ((fd = open(filename, O_RDONLY)) < 0) {
 		perror("evtest");
 		return 1;
 	}
+
+	free(filename);
 
 	if (ioctl(fd, EVIOCGVERSION, &version)) {
 		perror("evtest: can't get version");
