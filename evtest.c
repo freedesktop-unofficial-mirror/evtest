@@ -441,7 +441,7 @@ char **names[EV_MAX + 1] = {
  * @return Non-zero if the given directory entry starts with "event", or zero
  * otherwise.
  */
-static int EventDevOnly(const struct dirent *dir) {
+static int is_event_device(const struct dirent *dir) {
 	return strncmp(EVENT_DEV_NAME, dir->d_name, 5) == 0;
 }
 
@@ -456,7 +456,7 @@ static int scan_devices(void)
 	struct dirent **namelist;
 	int i, ndev, devnum;
 
-	ndev = scandir(DEV_INPUT_EVENT, &namelist, EventDevOnly, alphasort);
+	ndev = scandir(DEV_INPUT_EVENT, &namelist, is_event_device, alphasort);
 	if (ndev <= 0)
 		return -1;
 
