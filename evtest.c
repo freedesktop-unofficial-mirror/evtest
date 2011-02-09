@@ -1,8 +1,15 @@
 /*
  *  Copyright (c) 1999-2000 Vojtech Pavlik
  *  Copyright (c) 2009-2011 Red Hat, Inc
+ */
+
+/**
+ * @file
+ * Event device test program
  *
- *  Event device test program
+ * evtest prints the capabilities on the kernel devices in /dev/input/eventX
+ * and their events. Its primary purpose is for kernel or X driver
+ * debugging.
  *
  * See INSTALL for installation details or manually compile with
  * gcc -o evtest evtest.c
@@ -426,12 +433,24 @@ char **names[EV_MAX + 1] = {
 	[EV_SND] = sounds,			[EV_REP] = repeats,
 };
 
-/* filter for the AutoDevProbe scandir on /dev/input */
+/**
+ * Filter for the AutoDevProbe scandir on /dev/input.
+ *
+ * @param dir The current directory entry provided by scandir.
+ *
+ * @return Non-zero if the given directory entry starts with "event", or zero
+ * otherwise.
+ */
 static int EventDevOnly(const struct dirent *dir) {
 	return strncmp(EVENT_DEV_NAME, dir->d_name, 5) == 0;
 }
 
-/* Scans all /dev/input/event* and returns the number of the one to open */
+/**
+ * Scans all /dev/input/event*, display them and ask the user which one to
+ * open.
+ *
+ * @return The event device number of the device file selected.
+ */
 static int scan_devices(void)
 {
 	struct dirent **namelist;
@@ -470,12 +489,21 @@ static int scan_devices(void)
 	return devnum;
 }
 
+/**
+ * Print usage information.
+ */
 static void usage(void)
 {
 	printf("Usage: evtest /dev/input/eventX\n");
 	printf("Where X = input device number\n");
 }
 
+/**
+ * Parse the commandline arguments.
+ *
+ * @return The filename of the device file to open, or NULL in case of
+ * error.
+ */
 static char* parse_args(int argc, char **argv)
 {
 	char *filename;
@@ -504,9 +532,11 @@ static char* parse_args(int argc, char **argv)
 }
 
 /**
- * Print static device information (no events).
+ * Print static device information (no events). This information includes
+ * version numbers, device name and all bits supported by this device.
  *
- * Returns 0 on success or 1 otherwise.
+ * @param fd The file descriptor to the device.
+ * @return 0 on success or 1 otherwise.
  */
 static int print_device_info(int fd)
 {
@@ -557,9 +587,10 @@ static int print_device_info(int fd)
 }
 
 /**
- * Print device events.
+ * Print device events as they come in.
  *
- * Returns 0 on success or 1 otherwise.
+ * @param fd The file descriptor to the device.
+ * @return 0 on success or 1 otherwise.
  */
 static int print_events(int fd)
 {
@@ -602,7 +633,8 @@ static int print_events(int fd)
 /**
  * Grab and immediately ungrab the device.
  *
- * Returns 0 if the grab was successful, or 1 otherwise.
+ * @param fd The file descriptor to the device.
+ * @return 0 if the grab was successful, or 1 otherwise.
  */
 static int test_grab(int fd)
 {
