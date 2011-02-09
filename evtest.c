@@ -40,6 +40,16 @@
 #include <stdlib.h>
 #include <dirent.h>
 
+#define BITS_PER_LONG (sizeof(long) * 8)
+#define NBITS(x) ((((x)-1)/BITS_PER_LONG)+1)
+#define OFF(x)  ((x)%BITS_PER_LONG)
+#define BIT(x)  (1UL<<OFF(x))
+#define LONG(x) ((x)/BITS_PER_LONG)
+#define test_bit(bit, array)	((array[LONG(bit)] >> OFF(bit)) & 1)
+
+#define DEV_INPUT_EVENT "/dev/input"
+#define EVENT_DEV_NAME "event"
+
 #ifndef EV_SYN
 #define EV_SYN 0
 #endif
@@ -412,16 +422,6 @@ char **names[EV_MAX + 1] = {
 	[EV_MSC] = misc,			[EV_LED] = leds,
 	[EV_SND] = sounds,			[EV_REP] = repeats,
 };
-
-#define BITS_PER_LONG (sizeof(long) * 8)
-#define NBITS(x) ((((x)-1)/BITS_PER_LONG)+1)
-#define OFF(x)  ((x)%BITS_PER_LONG)
-#define BIT(x)  (1UL<<OFF(x))
-#define LONG(x) ((x)/BITS_PER_LONG)
-#define test_bit(bit, array)	((array[LONG(bit)] >> OFF(bit)) & 1)
-
-#define DEV_INPUT_EVENT "/dev/input"
-#define EVENT_DEV_NAME "event"
 
 /* filter for the AutoDevProbe scandir on /dev/input */
 static int EventDevOnly(const struct dirent *dir) {
