@@ -440,7 +440,7 @@ static int scan_devices(void)
 	if (ndev <= 0)
 		return -1;
 
-	printf("Available devices:\n");
+	fprintf(stderr, "Available devices:\n");
 
 	for (i = 0; i < ndev; i++)
 	{
@@ -455,12 +455,12 @@ static int scan_devices(void)
 			continue;
 		ioctl(fd, EVIOCGNAME(sizeof(name)), name);
 
-		printf("%s:	%s\n", fname, name);
+		fprintf(stderr, "%s:	%s\n", fname, name);
 		close(fd);
 		free(namelist[i]);
 	}
 
-	printf("Select the device event number [0-%d]: ", ndev - 1);
+	fprintf(stderr, "Select the device event number [0-%d]: ", ndev - 1);
 	scanf("%d", &devnum);
 
 	if (devnum >= ndev || devnum < 0)
@@ -482,11 +482,11 @@ static char* parse_args(int argc, char **argv)
 	if (argc < 2) {
 		int dev;
 
-		printf("No device specified, trying to scan all of %s/%s*\n",
+		fprintf(stderr, "No device specified, trying to scan all of %s/%s*\n",
 			DEV_INPUT_EVENT, EVENT_DEV_NAME);
 
 		if (getuid() != 0)
-			printf("Not running as root, no devices may be available.\n");
+			fprintf(stderr, "Not running as root, no devices may be available.\n");
 
 		dev = scan_devices();
 		if (dev == -1)
