@@ -446,7 +446,8 @@ static int scan_devices(void)
 		int fd = -1;
 		char name[256] = "???";
 
-		sprintf(fname, "%s/%s", DEV_INPUT_EVENT, namelist[i]->d_name);
+		snprintf(fname, sizeof(fname),
+			 "%s/%s", DEV_INPUT_EVENT, namelist[i]->d_name);
 		fd = open(fname, O_RDONLY);
 		if (fd < 0)
 			continue;
@@ -499,9 +500,10 @@ int main (int argc, char **argv)
 			return 1;
 		}
 
-		sprintf(filename, "%s/%s%d", DEV_INPUT_EVENT, EVENT_DEV_NAME, dev);
+		snprintf(filename, sizeof(filename),
+			 "%s/%s%d", DEV_INPUT_EVENT, EVENT_DEV_NAME, dev);
 	} else
-		strcpy(filename, argv[argc - 1]);
+		strncpy(filename, argv[argc - 1], sizeof(filename));
 
 	if ((fd = open(filename, O_RDONLY)) < 0) {
 		perror("evtest");
