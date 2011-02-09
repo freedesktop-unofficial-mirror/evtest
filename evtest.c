@@ -37,6 +37,8 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <dirent.h>
 
 #ifndef EV_SYN
 #define EV_SYN 0
@@ -418,6 +420,58 @@ char **names[EV_MAX + 1] = {
 #define LONG(x) ((x)/BITS_PER_LONG)
 #define test_bit(bit, array)	((array[LONG(bit)] >> OFF(bit)) & 1)
 
+#define DEV_INPUT_EVENT "/dev/input"
+#define EVENT_DEV_NAME "event"
+
+/* filter for the AutoDevProbe scandir on /dev/input */
+static int EventDevOnly(const struct dirent *dir) {
+	return strncmp(EVENT_DEV_NAME, dir->d_name, 5) == 0;
+}
+
+/* Scans all /dev/input/event* and returns the number of the one to open */
+static int scan_devices(void)
+{
+	struct dirent **namelist;
+	int i, ndev, devnum;
+
+	ndev = scandir(DEV_INPUT_EVENT, &namelist, EventDevOnly, alphasort);
+	if (ndev <= 0)
+		return -1;
+
+	printf("Available devices:\n");
+
+	for (i = 0; i < ndev; i++)
+	{
+		char fname[64];
+		int fd = -1;
+		char name[256] = "???";
+
+		sprintf(fname, "%s/%s", DEV_INPUT_EVENT, namelist[i]->d_name);
+		fd = open(fname, O_RDONLY);
+		if (fd < 0)
+			continue;
+		ioctl(fd, EVIOCGNAME(sizeof(name)), name);
+
+		printf("%s:	%s\n", fname, name);
+		close(fd);
+		free(namelist[i]);
+	}
+
+	printf("Select the device event number [0-%d]: ", ndev - 1);
+	scanf("%d", &devnum);
+
+	if (devnum >= ndev || devnum < 0)
+		return -1;
+
+	return devnum;
+}
+
+static void usage(void)
+{
+	printf("Usage: evtest /dev/input/eventX\n");
+	printf("Where X = input device number\n");
+}
+
 int main (int argc, char **argv)
 {
 	int fd, rd, i, j, k;
@@ -427,14 +481,29 @@ int main (int argc, char **argv)
 	unsigned long bit[EV_MAX][NBITS(KEY_MAX)];
 	char name[256] = "Unknown";
 	int abs[6] = {0};
+	char filename[64] = {0};
 
 	if (argc < 2) {
-		printf("Usage: evtest /dev/input/eventX\n");
-		printf("Where X = input device number\n");
-		return 1;
-	}
+		int dev;
 
-	if ((fd = open(argv[argc - 1], O_RDONLY)) < 0) {
+		printf("No device specified, trying to scan all of %s/%s*\n",
+			DEV_INPUT_EVENT, EVENT_DEV_NAME);
+
+		if (getuid() != 0)
+			printf("Not running as root, no devices may be available.\n");
+
+		dev = scan_devices();
+		if (dev == -1)
+		{
+			usage();
+			return 1;
+		}
+
+		sprintf(filename, "%s/%s%d", DEV_INPUT_EVENT, EVENT_DEV_NAME, dev);
+	} else
+		strcpy(filename, argv[argc - 1]);
+
+	if ((fd = open(filename, O_RDONLY)) < 0) {
 		perror("evtest");
 		return 1;
 	}
