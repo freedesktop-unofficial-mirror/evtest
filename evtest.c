@@ -598,6 +598,23 @@ static int print_events(int fd)
 	}
 }
 
+/**
+ * Grab and immediately ungrab the device.
+ *
+ * Returns 0 if the grab was successful, or 1 otherwise.
+ */
+static int test_grab(int fd)
+{
+	int rc;
+
+	rc = ioctl(fd, EVIOCGRAB, (void*)1);
+
+	if (!rc)
+		ioctl(fd, EVIOCGRAB, (void*)0);
+
+	return rc;
+}
+
 int main (int argc, char **argv)
 {
 	int fd;
@@ -619,6 +636,18 @@ int main (int argc, char **argv)
 		return 1;
 
 	printf("Testing ... (interrupt to exit)\n");
+
+	if (test_grab(fd))
+	{
+		printf("***********************************************\n");
+		printf("  This device is grabbed by another process.\n");
+		printf("  No events are available to evtest while the\n"
+		       "  other grab is active.\n");
+		printf("  In most cases, this is caused by an X driver,\n"
+		       "  try VT-switching and re-run evtest again.\n");
+		printf("***********************************************\n");
+	}
+
 
 	return print_events(fd);
 }
