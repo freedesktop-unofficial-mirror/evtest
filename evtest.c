@@ -532,6 +532,24 @@ static char* parse_args(int argc, char **argv)
 }
 
 /**
+ * Print additional information for absolute axes (min/max, current value,
+ * etc.).
+ *
+ * @param fd The file descriptor to the device.
+ * @param axis The axis identifier (e.g. ABS_X).
+ */
+static void print_absdata(int fd, int axis)
+{
+	int abs[6] = {0};
+	int k;
+
+	ioctl(fd, EVIOCGABS(axis), abs);
+	for (k = 0; k < 6; k++)
+		if ((k < 3) || abs[k])
+			printf("      %s %6d\n", absval[k], abs[k]);
+}
+
+/**
  * Print static device information (no events). This information includes
  * version numbers, device name and all bits supported by this device.
  *
@@ -540,10 +558,9 @@ static char* parse_args(int argc, char **argv)
  */
 static int print_device_info(int fd)
 {
-	int i, j, k;
+	int i, j;
 	int version;
 	unsigned short id[4];
-	int abs[6] = {0};
 	char name[256] = "Unknown";
 	unsigned long bit[EV_MAX][NBITS(KEY_MAX)];
 
@@ -574,12 +591,8 @@ static int print_device_info(int fd)
 			for (j = 0; j < KEY_MAX; j++)
 				if (test_bit(j, bit[i])) {
 					printf("    Event code %d (%s)\n", j, names[i] ? (names[i][j] ? names[i][j] : "?") : "?");
-					if (i == EV_ABS) {
-						ioctl(fd, EVIOCGABS(j), abs);
-						for (k = 0; k < 6; k++)
-							if ((k < 3) || abs[k])
-								printf("      %s %6d\n", absval[k], abs[k]);
-					}
+					if (i == EV_ABS)
+						print_absdata(fd, j);
 				}
 		}
 
