@@ -703,3 +703,5 @@ int main (int argc, char **argv)
 
 	return print_events(fd);
 }
+
+/* vim: set noexpandtab tabstop=8 shiftwidth=8: */
