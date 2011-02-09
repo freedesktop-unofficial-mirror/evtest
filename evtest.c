@@ -502,29 +502,19 @@ static char* parse_args(int argc, char **argv)
 	return filename;
 }
 
-
-int main (int argc, char **argv)
+/**
+ * Print static device information (no events).
+ *
+ * Returns 0 on success or 1 otherwise.
+ */
+static int print_device_info(int fd)
 {
-	int fd, rd, i, j, k;
-	struct input_event ev[64];
+	int i, j, k;
 	int version;
 	unsigned short id[4];
-	unsigned long bit[EV_MAX][NBITS(KEY_MAX)];
-	char name[256] = "Unknown";
 	int abs[6] = {0};
-	char *filename;
-
-	filename = parse_args(argc, argv);
-
-	if (!filename)
-		return 1;
-
-	if ((fd = open(filename, O_RDONLY)) < 0) {
-		perror("evtest");
-		return 1;
-	}
-
-	free(filename);
+	char name[256] = "Unknown";
+	unsigned long bit[EV_MAX][NBITS(KEY_MAX)];
 
 	if (ioctl(fd, EVIOCGVERSION, &version)) {
 		perror("evtest: can't get version");
@@ -562,8 +552,18 @@ int main (int argc, char **argv)
 				}
 		}
 
+	return 0;
+}
 
-	printf("Testing ... (interrupt to exit)\n");
+/**
+ * Print device events.
+ *
+ * Returns 0 on success or 1 otherwise.
+ */
+static int print_events(int fd)
+{
+	struct input_event ev[64];
+	int i, rd;
 
 	while (1) {
 		rd = read(fd, ev, sizeof(struct input_event) * 64);
@@ -596,4 +596,29 @@ int main (int argc, char **argv)
 		}
 
 	}
+}
+
+int main (int argc, char **argv)
+{
+	int fd;
+	char *filename;
+
+	filename = parse_args(argc, argv);
+
+	if (!filename)
+		return 1;
+
+	if ((fd = open(filename, O_RDONLY)) < 0) {
+		perror("evtest");
+		return 1;
+	}
+
+	free(filename);
+
+	if (print_device_info(fd))
+		return 1;
+
+	printf("Testing ... (interrupt to exit)\n");
+
+	return print_events(fd);
 }
