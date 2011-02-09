@@ -637,6 +637,9 @@ int main (int argc, char **argv)
 
 	free(filename);
 
+	if (!isatty(fileno(stdout)))
+		setbuf(stdout, NULL);
+
 	if (print_device_info(fd))
 		return 1;
 
@@ -652,7 +655,6 @@ int main (int argc, char **argv)
 		       "  try VT-switching and re-run evtest again.\n");
 		printf("***********************************************\n");
 	}
-
 
 	return print_events(fd);
 }
