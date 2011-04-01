@@ -74,7 +74,7 @@ char *events[EV_MAX + 1] = {
 	[EV_MSC] = "Misc",			[EV_LED] = "LED",
 	[EV_SND] = "Sound",			[EV_REP] = "Repeat",
 	[EV_FF] = "ForceFeedback",		[EV_PWR] = "Power",
-	[EV_FF_STATUS] = "ForceFeedbackStatus",
+	[EV_FF_STATUS] = "ForceFeedbackStatus",	[EV_SW] = "Switch",
 };
 
 char *keys[KEY_MAX + 1] = {
@@ -425,12 +425,36 @@ char *syns[3] = {
 #endif
 };
 
+char *switches[SW_MAX + 1] = {
+	[0 ... SW_MAX] = NULL,
+	[SW_LID] = "Lid",
+	[SW_TABLET_MODE] = "Tablet Mode",
+	[SW_HEADPHONE_INSERT] = "Headphone Insert",
+	[SW_RFKILL_ALL] = "RFKILL",
+	[SW_MICROPHONE_INSERT] = "Microphone Insert",
+	[SW_DOCK] = "Dock",
+	[SW_LINEOUT_INSERT] = "Lineout Insert",
+	[SW_JACK_PHYSICAL_INSERT] = "Jack Physical Insert",
+#ifdef SW_VIDEOOUT_INSERT
+	[SW_VIDEOOUT_INSERT] = "Video Out Insert",
+#endif
+#ifdef SW_CAMERA_LENS_COVER
+	[SW_CAMERA_LENS_COVER] = "Camera Lens Cover",
+	[SW_KEYPAD_SLIDE] = "Keypad Slide",
+	[SW_FRONT_PROXIMITY] = "Front Proximity Sensor",
+#endif
+#ifdef SW_ROTATE_LOCK
+	[SW_ROTATE_LOCK] = "Rotate Lock",
+#endif
+};
+
 char **names[EV_MAX + 1] = {
 	[0 ... EV_MAX] = NULL,
 	[EV_SYN] = events,			[EV_KEY] = keys,
 	[EV_REL] = relatives,			[EV_ABS] = absolutes,
 	[EV_MSC] = misc,			[EV_LED] = leds,
 	[EV_SND] = sounds,			[EV_REP] = repeats,
+	[EV_SW] = switches,
 };
 
 /**
