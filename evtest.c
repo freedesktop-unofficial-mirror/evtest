@@ -347,7 +347,9 @@ char *absval[6] = { "Value", "Min  ", "Max  ", "Fuzz ", "Flat ", "Resolution "};
 char *relatives[REL_MAX + 1] = {
 	[0 ... REL_MAX] = NULL,
 	[REL_X] = "X",			[REL_Y] = "Y",
-	[REL_Z] = "Z",			[REL_HWHEEL] = "HWheel",
+	[REL_Z] = "Z",			[REL_RX] = "Rx",
+	[REL_RY] = "Ry",		[REL_RZ] = "Rz",
+	[REL_HWHEEL] = "HWheel",
 	[REL_DIAL] = "Dial",		[REL_WHEEL] = "Wheel",
 	[REL_MISC] = "Misc",
 };
