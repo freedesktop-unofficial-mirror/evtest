@@ -84,7 +84,9 @@ static int init_uinput()
 {
     struct uinput_user_dev dev;
 
-    fd = open("/dev/input/uinput", O_RDWR);
+    fd = open("/dev/uinput", O_RDWR);
+    if (fd < 0 && errno == ENODEV)
+        fd = open("/dev/input/uinput", O_RDWR);
     if (fd < 0)
         goto error;
 
