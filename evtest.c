@@ -450,6 +450,23 @@ char *switches[SW_MAX + 1] = {
 #endif
 };
 
+char *force[FF_MAX + 1] = {
+	[0 ... FF_MAX] = NULL,
+	[FF_RUMBLE] = "Rumble",		[FF_PERIODIC] = "Periodic",
+	[FF_CONSTANT] = "Constant",	[FF_SPRING] = "Spring",
+	[FF_FRICTION] = "Friction",	[FF_DAMPER] = "Damper",
+	[FF_INERTIA] = "Inertia",	[FF_RAMP] = "Ramp",
+	[FF_SQUARE] = "Square",		[FF_TRIANGLE] = "Triangle",
+	[FF_SINE] = "Sine",		[FF_SAW_UP] = "SawUp",
+	[FF_SAW_DOWN] = "SawDown",	[FF_CUSTOM] = "Custom",
+	[FF_GAIN] = "Gain",		[FF_AUTOCENTER] = "AutoCenter",
+};
+
+char *forcestatus[FF_STATUS_MAX + 1] = {
+	[0 ... FF_STATUS_MAX] = NULL,
+	[FF_STATUS_STOPPED] = "Stopped",	[FF_STATUS_PLAYING] = "Playing",
+};
+
 char **names[EV_MAX + 1] = {
 	[0 ... EV_MAX] = NULL,
 	[EV_SYN] = events,			[EV_KEY] = keys,
@@ -457,6 +474,7 @@ char **names[EV_MAX + 1] = {
 	[EV_MSC] = misc,			[EV_LED] = leds,
 	[EV_SND] = sounds,			[EV_REP] = repeats,
 	[EV_SW] = switches,
+	[EV_FF] = force,			[EV_FF_STATUS] = forcestatus,
 };
 
 /**
