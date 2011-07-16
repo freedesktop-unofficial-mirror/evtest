@@ -551,34 +551,6 @@ static void usage(void)
 }
 
 /**
- * Parse the commandline arguments.
- *
- * @return The filename of the device file to open, or NULL in case of
- * error. This string is allocated and must be freed by the caller.
- */
-static char* parse_args(int argc, char **argv)
-{
-	char *filename;
-
-	if (argc < 2) {
-		fprintf(stderr, "No device specified, trying to scan all of %s/%s*\n",
-			DEV_INPUT_EVENT, EVENT_DEV_NAME);
-
-		if (getuid() != 0)
-			fprintf(stderr, "Not running as root, no devices may be available.\n");
-
-		filename = scan_devices();
-		if (!filename) {
-			usage();
-			return NULL;
-		}
-	} else
-		filename = strdup(argv[argc - 1]);
-
-	return filename;
-}
-
-/**
  * Print additional information for absolute axes (min/max, current value,
  * etc.).
  *
@@ -708,15 +680,35 @@ static int test_grab(int fd)
 	return rc;
 }
 
-int main (int argc, char **argv)
+/**
+ * Enter capture mode. The requested event device will be monitored, and any
+ * captured events will be decoded and printed on the console.
+ *
+ * @param device The device to monitor, or NULL if the user should be prompted.
+ * @return 0 on success, non-zero on error.
+ */
+static int do_capture(const char *device)
 {
 	int fd;
 	char *filename;
 
-	filename = parse_args(argc, argv);
+	if (!device) {
+		fprintf(stderr, "No device specified, trying to scan all of %s/%s*\n",
+			DEV_INPUT_EVENT, EVENT_DEV_NAME);
+
+		if (getuid() != 0)
+			fprintf(stderr, "Not running as root, no devices may be available.\n");
+
+		filename = scan_devices();
+		if (!filename) {
+			usage();
+			return EXIT_FAILURE;
+		}
+	} else
+		filename = strdup(device);
 
 	if (!filename)
-		return 1;
+		return EXIT_FAILURE;
 
 	if ((fd = open(filename, O_RDONLY)) < 0) {
 		perror("evtest");
@@ -724,7 +716,7 @@ int main (int argc, char **argv)
 			fprintf(stderr, "You do not have access to %s. Try "
 					"running as root instead.\n",
 					filename);
-		return 1;
+		return EXIT_FAILURE;
 	}
 
 	free(filename);
@@ -733,7 +725,7 @@ int main (int argc, char **argv)
 		setbuf(stdout, NULL);
 
 	if (print_device_info(fd))
-		return 1;
+		return EXIT_FAILURE;
 
 	printf("Testing ... (interrupt to exit)\n");
 
@@ -749,6 +741,16 @@ int main (int argc, char **argv)
 	}
 
 	return print_events(fd);
+}
+
+int main (int argc, char **argv)
+{
+	const char *device = NULL;
+
+	if (argc >= 2)
+		device = argv[1];
+
+	return do_capture(device);
 }
 
 /* vim: set noexpandtab tabstop=8 shiftwidth=8: */
