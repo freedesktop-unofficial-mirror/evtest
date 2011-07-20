@@ -4,17 +4,33 @@ EVTEST(1)
 NAME
 ----
 
-     evtest - Input device event monitor
+     evtest - Input device event monitor and query tool
 
 SYNOPSIS
 --------
-     evtest "/dev/input/eventX"
+     evtest /dev/input/eventX
+
+     evtest --query /dev/input/eventX <type> <value>
 
 DESCRIPTION
 -----------
-evtest displays information on the input device specified on the command
-line, including all the events supported by the device. It then monitors the
-device and displays all the events layer events generated.
+The first invocation type displayed above ("capture mode") causes evtest to
+display information about the specified input device, including all the events
+supported by the device. It then monitors the device and displays all the
+events layer events generated.
+
+In the second invocation type ("query mode"), evtest performs a one-shot query
+of the state of a specific key *value* of an event *type*.
+
+*type* is one of: *EV_KEY*, *EV_SW*, *EV_SND*, *EV_LED* (or the numerical value)
+
+*value* can be either a decimal representation (e.g. 44), hex
+(e.g. 0x2c), or the constant name (e.g. KEY_Z) of the key/switch/sound/LED
+being queried.
+
+If the state bit is set (key pressed, switch on, ...), evtest exits with
+code 0. If the state bit is unset (key depressed, switch off, ...), evtest
+exits with code 10. No other output is generated.
 
 evtest needs to be able to read from the device; in most cases this means it
 must be run as root.
@@ -31,6 +47,13 @@ device may be grabbed by a process (EVIOCGRAB).  This is usually the case
 when debugging a synaptics device from within X. VT switching to a TTY or
 shutting down the X server terminates this grab and synaptics devices can be
 debugged.
+
+EXIT CODE
+---------
+evtest returns 1 on error.
+
+When used to query state, evtest returns 0 if the state bit is unset and
+10 if the state bit is set.
 
 SEE ALSO
 --------

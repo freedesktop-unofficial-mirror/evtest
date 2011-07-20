@@ -49,6 +49,8 @@
 #include <stdlib.h>
 #include <dirent.h>
 #include <errno.h>
+#include <getopt.h>
+#include <ctype.h>
 
 #define BITS_PER_LONG (sizeof(long) * 8)
 #define NBITS(x) ((((x)-1)/BITS_PER_LONG)+1)
@@ -68,6 +70,83 @@
 #endif
 
 #define NAME_ELEMENT(element) [element] = #element
+
+enum evtest_mode {
+	MODE_CAPTURE,
+	MODE_QUERY,
+};
+
+static const struct query_mode {
+	const char *name;
+	int event_type;
+	int max;
+	int rq;
+} query_modes[] = {
+	{ "EV_KEY", EV_KEY, KEY_MAX, EVIOCGKEY(KEY_MAX) },
+	{ "EV_LED", EV_LED, LED_MAX, EVIOCGLED(LED_MAX) },
+	{ "EV_SND", EV_SND, SND_MAX, EVIOCGSND(SND_MAX) },
+	{ "EV_SW",  EV_SW, SW_MAX, EVIOCGSW(SW_MAX) },
+};
+
+/**
+ * Look up an entry in the query_modes table by its textual name. The search
+ * is case-insensitive.
+ *
+ * @param mode The name of the entry to be found.
+ *
+ * @return The requested query_mode, or NULL if it could not be found.
+ */
+static const struct query_mode *find_query_mode_by_name(const char *name)
+{
+	int i;
+	for (i = 0; i < sizeof(query_modes) / sizeof(*query_modes); i++) {
+		const struct query_mode *mode = &query_modes[i];
+		if (strcmp(mode->name, name) == 0)
+			return mode;
+	}
+	return NULL;
+}
+
+/**
+ * Look up an entry in the query_modes table by value.
+ *
+ * @param event_type The value of the entry to be found.
+ *
+ * @return The requested query_mode, or NULL if it could not be found.
+ */
+static const struct query_mode *find_query_mode_by_value(int event_type)
+{
+	int i;
+	for (i = 0; i < sizeof(query_modes) / sizeof(*query_modes); i++) {
+		const struct query_mode *mode = &query_modes[i];
+		if (mode->event_type == event_type)
+			return mode;
+	}
+	return NULL;
+}
+
+/**
+ * Find a query_mode based on a string identifier. The string can either
+ * be a numerical value (e.g. "5") or the name of the event type in question
+ * (e.g. "EV_SW").
+ *
+ * @param query_mode The mode to search for
+ *
+ * @return The requested code's numerical value, or negative on error.
+ */
+static const struct query_mode *find_query_mode(const char *query_mode)
+{
+	if (isdigit(query_mode[0])) {
+		unsigned long val;
+		errno = 0;
+		val = strtoul(query_mode, NULL, 0);
+		if (errno)
+			return NULL;
+		return find_query_mode_by_value(val);
+	} else {
+		return find_query_mode_by_name(query_mode);
+	}
+}
 
 static const char * const events[EV_MAX + 1] = {
 	[0 ... EV_MAX] = NULL,
@@ -480,6 +559,41 @@ static const char * const * const names[EV_MAX + 1] = {
 };
 
 /**
+ * Convert a string to a specific key/snd/led/sw code. The string can either
+ * be the name of the key in question (e.g. "SW_DOCK") or the numerical
+ * value, either as decimal (e.g. "5") or as hex (e.g. "0x5").
+ *
+ * @param mode The mode being queried (key, snd, led, sw)
+ * @param kstr The string to parse and convert
+ *
+ * @return The requested code's numerical value, or negative on error.
+ */
+static int get_keycode(const struct query_mode *query_mode, const char *kstr)
+{
+	if (isdigit(kstr[0])) {
+		unsigned long val;
+		errno = 0;
+		val = strtoul(kstr, NULL, 0);
+		if (errno) {
+			fprintf(stderr, "Could not interpret value %s\n", kstr);
+			return -1;
+		}
+		return (int) val;
+	} else {
+		const char * const *keynames = names[query_mode->event_type];
+		int i;
+
+		for (i = 0; i < query_mode->max; i++) {
+			const char *name = keynames[i];
+			if (name && strcmp(name, kstr) == 0)
+				return i;
+		}
+
+		return -1;
+	}
+}
+
+/**
  * Filter for the AutoDevProbe scandir on /dev/input.
  *
  * @param dir The current directory entry provided by scandir.
@@ -544,10 +658,22 @@ static char* scan_devices(void)
 /**
  * Print usage information.
  */
-static void usage(void)
+static int usage(void)
 {
-	printf("Usage: evtest /dev/input/eventX\n");
-	printf("Where X = input device number\n");
+	printf("USAGE:\n");
+	printf(" Grab mode:\n");
+	printf("   %s /dev/input/eventX\n", program_invocation_short_name);
+	printf("\n");
+	printf(" Query mode: (check exit code)\n");
+	printf("   %s --query /dev/input/eventX <type> <value>\n",
+		program_invocation_short_name);
+
+	printf("\n");
+	printf("<type> is one of: EV_KEY, EV_SW, EV_LED, EV_SND\n");
+	printf("<value> can either be a numerical value, or the textual name of the\n");
+	printf("key/switch/LED/sound being queried (e.g. SW_DOCK).\n");
+
+	return EXIT_FAILURE;
 }
 
 /**
@@ -700,10 +826,8 @@ static int do_capture(const char *device)
 			fprintf(stderr, "Not running as root, no devices may be available.\n");
 
 		filename = scan_devices();
-		if (!filename) {
-			usage();
-			return EXIT_FAILURE;
-		}
+		if (!filename)
+			return usage();
 	} else
 		filename = strdup(device);
 
@@ -743,14 +867,118 @@ static int do_capture(const char *device)
 	return print_events(fd);
 }
 
+/**
+ * Perform a one-shot state query on a specific device. The query can be of
+ * any known mode, on any valid keycode.
+ *
+ * @param device Path to the evdev device node that should be queried.
+ * @param query_mode The event type that is being queried (e.g. key, switch)
+ * @param keycode The code of the key/switch/sound/LED to be queried
+ * @return 0 if the state bit is unset, 10 if the state bit is set, 1 on error.
+ */
+static int query_device(const char *device, const struct query_mode *query_mode, int keycode)
+{
+	int fd;
+	int r;
+	unsigned long state[NBITS(query_mode->max)];
+
+	fd = open(device, O_RDONLY);
+	if (fd < 0) {
+		perror("open");
+		return EXIT_FAILURE;
+	}
+	memset(state, 0, sizeof(state));
+	r = ioctl(fd, query_mode->rq, state);
+	close(fd);
+
+	if (r == -1) {
+		perror("ioctl");
+		return EXIT_FAILURE;
+	}
+
+	if (test_bit(keycode, state))
+		return 10; /* different from EXIT_FAILURE */
+	else
+		return 0;
+}
+
+/**
+ * Enter query mode. The requested event device will be queried for the state
+ * of a particular switch/key/sound/LED.
+ *
+ * @param device The device to query.
+ * @param mode The mode (event type) that is to be queried (snd, sw, key, led)
+ * @param keycode The key code to query the state of.
+ * @return 0 if the state bit is unset, 10 if the state bit is set.
+ */
+static int do_query(const char *device, const char *event_type, const char *keyname)
+{
+	const struct query_mode *query_mode;
+	int keycode;
+
+	if (!device) {
+		fprintf(stderr, "Device argument is required for query.\n");
+		return usage();
+	}
+
+	query_mode = find_query_mode(event_type);
+	if (!query_mode) {
+		fprintf(stderr, "Unrecognised event type: %s\n", event_type);
+		return usage();
+	}
+
+	keycode = get_keycode(query_mode, keyname);
+	if (keycode < 0) {
+		fprintf(stderr, "Unrecognised key name: %s\n", keyname);
+		return usage();
+	} else if (keycode > query_mode->max) {
+		fprintf(stderr, "Key %d is out of bounds.\n", keycode);
+		return EXIT_FAILURE;
+	}
+
+	return query_device(device, query_mode, keycode);
+}
+
+static const struct option long_options[] = {
+	{ "query", no_argument, NULL, MODE_QUERY },
+	{ 0, },
+};
+
 int main (int argc, char **argv)
 {
 	const char *device = NULL;
+	const char *keyname;
+	const char *event_type;
+	enum evtest_mode mode = MODE_CAPTURE;
 
-	if (argc >= 2)
-		device = argv[1];
+	while (1) {
+		int option_index = 0;
+		int c = getopt_long(argc, argv, "", long_options, &option_index);
+		if (c == -1)
+			break;
+		switch (c) {
+		case MODE_QUERY:
+			mode = c;
+			break;
+		default:
+			return usage();
+		}
+	}
 
-	return do_capture(device);
+	if (optind < argc)
+		device = argv[optind++];
+
+	if (mode == MODE_CAPTURE)
+		return do_capture(device);
+
+	if ((argc - optind) < 2) {
+		fprintf(stderr, "Query mode requires device, type and key parameters\n");
+		return usage();
+	}
+
+	event_type = argv[optind++];
+	keyname = argv[optind++];
+	return do_query(device, event_type, keyname);
 }
 
 /* vim: set noexpandtab tabstop=8 shiftwidth=8: */
