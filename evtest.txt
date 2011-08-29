@@ -29,8 +29,8 @@ of the state of a specific key *value* of an event *type*.
 being queried.
 
 If the state bit is set (key pressed, switch on, ...), evtest exits with
-code 0. If the state bit is unset (key depressed, switch off, ...), evtest
-exits with code 10. No other output is generated.
+code 10. If the state bit is unset (key depressed, switch off, ...), evtest
+exits with code 0. No other output is generated.
 
 evtest needs to be able to read from the device; in most cases this means it
 must be run as root.
