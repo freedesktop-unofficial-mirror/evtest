@@ -89,8 +89,7 @@ static const struct query_mode {
 };
 
 /**
- * Look up an entry in the query_modes table by its textual name. The search
- * is case-insensitive.
+ * Look up an entry in the query_modes table by its textual name.
  *
  * @param mode The name of the entry to be found.
  *
