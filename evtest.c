@@ -39,6 +39,10 @@
 #include <stdio.h>
 #include <stdint.h>
 
+#if HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include <linux/version.h>
 #include <linux/input.h>
 
@@ -74,6 +78,7 @@
 enum evtest_mode {
 	MODE_CAPTURE,
 	MODE_QUERY,
+	MODE_VERSION,
 };
 
 static const struct query_mode {
@@ -654,6 +659,16 @@ static char* scan_devices(void)
 	return filename;
 }
 
+static int version(void)
+{
+#ifndef PACKAGE_VERSION
+#define PACKAGE_VERSION "<version undefined>"
+#endif
+	printf("%s %s\n", program_invocation_short_name, PACKAGE_VERSION);
+	return EXIT_SUCCESS;
+}
+
+
 /**
  * Print usage information.
  */
@@ -940,6 +955,7 @@ static int do_query(const char *device, const char *event_type, const char *keyn
 
 static const struct option long_options[] = {
 	{ "query", no_argument, NULL, MODE_QUERY },
+	{ "version", no_argument, NULL, MODE_VERSION },
 	{ 0, },
 };
 
@@ -959,6 +975,8 @@ int main (int argc, char **argv)
 		case MODE_QUERY:
 			mode = c;
 			break;
+		case MODE_VERSION:
+			return version();
 		default:
 			return usage();
 		}
