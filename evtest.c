@@ -162,6 +162,16 @@ static const char * const events[EV_MAX + 1] = {
 	NAME_ELEMENT(EV_FF_STATUS),		NAME_ELEMENT(EV_SW),
 };
 
+#ifdef INPUT_PROP_SEMI_MT
+static const char * const props[INPUT_PROP_MAX + 1] = {
+	[0 ... INPUT_PROP_MAX] = NULL,
+	NAME_ELEMENT(INPUT_PROP_POINTER),
+	NAME_ELEMENT(INPUT_PROP_DIRECT),
+	NAME_ELEMENT(INPUT_PROP_BUTTONPAD),
+	NAME_ELEMENT(INPUT_PROP_SEMI_MT),
+};
+#endif
+
 static const char * const keys[KEY_MAX + 1] = {
 	[0 ... KEY_MAX] = NULL,
 	NAME_ELEMENT(KEY_RESERVED),		NAME_ELEMENT(KEY_ESC),
@@ -722,6 +732,7 @@ static int print_device_info(int fd)
 	unsigned short id[4];
 	char name[256] = "Unknown";
 	unsigned long bit[EV_MAX][NBITS(KEY_MAX)];
+	unsigned long propbits[INPUT_PROP_MAX];
 
 	if (ioctl(fd, EVIOCGVERSION, &version)) {
 		perror("evtest: can't get version");
@@ -754,6 +765,16 @@ static int print_device_info(int fd)
 						print_absdata(fd, j);
 				}
 		}
+
+#ifdef INPUT_PROP_SEMI_MT
+	memset(propbits, 0, sizeof(propbits));
+	ioctl(fd, EVIOCGPROP(sizeof(propbits)), propbits);
+	printf("Properties:\n");
+	for (i = 0; i < INPUT_PROP_MAX; i++) {
+		if (test_bit(i, propbits))
+			printf("  Property type %d (%s)\n", i, props[i] ?  props[i] : "?");
+	}
+#endif
 
 	return 0;
 }
