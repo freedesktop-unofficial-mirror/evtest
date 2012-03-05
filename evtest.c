@@ -435,6 +435,9 @@ static const char * const keys[KEY_MAX + 1] = {
 	NAME_ELEMENT(BTN_TRIGGER_HAPPY29),	NAME_ELEMENT(BTN_TRIGGER_HAPPY39),
 	NAME_ELEMENT(BTN_TRIGGER_HAPPY30),	NAME_ELEMENT(BTN_TRIGGER_HAPPY40),
 #endif
+#ifdef BTN_TOOL_QUINTTAP
+	NAME_ELEMENT(BTN_TOOL_QUINTTAP),
+#endif
 };
 
 static const char * const absval[6] = { "Value", "Min  ", "Max  ", "Fuzz ", "Flat ", "Resolution "};
