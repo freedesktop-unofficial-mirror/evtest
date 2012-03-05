@@ -735,7 +735,9 @@ static int print_device_info(int fd)
 	unsigned short id[4];
 	char name[256] = "Unknown";
 	unsigned long bit[EV_MAX][NBITS(KEY_MAX)];
+#ifdef INPUT_PROP_SEMI_MT
 	unsigned long propbits[INPUT_PROP_MAX];
+#endif
 
 	if (ioctl(fd, EVIOCGVERSION, &version)) {
 		perror("evtest: can't get version");
