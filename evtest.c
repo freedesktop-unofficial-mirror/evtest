@@ -487,6 +487,11 @@ static const char * const absolutes[ABS_MAX + 1] = {
 #ifdef ABS_MT_SLOT
 	NAME_ELEMENT(ABS_MT_SLOT),
 #endif
+#ifdef ABS_MT_TOOL_X
+	NAME_ELEMENT(ABS_MT_TOOL_X),
+	NAME_ELEMENT(ABS_MT_TOOL_Y),
+	NAME_ELEMENT(ABS_MT_DISTANCE),
+#endif
 
 };
 
@@ -495,6 +500,9 @@ static const char * const misc[MSC_MAX + 1] = {
 	NAME_ELEMENT(MSC_SERIAL),		NAME_ELEMENT(MSC_PULSELED),
 	NAME_ELEMENT(MSC_GESTURE),		NAME_ELEMENT(MSC_RAW),
 	NAME_ELEMENT(MSC_SCAN),
+#ifdef MSC_TIMESTAMP
+	NAME_ELEMENT(MSC_TIMESTAMP),
+#endif
 };
 
 static const char * const leds[LED_MAX + 1] = {
