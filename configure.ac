@@ -7,15 +7,6 @@ AC_PROG_CC
 AC_PROG_INSTALL
 PKG_PROG_PKG_CONFIG
 
-AC_ARG_ENABLE([xml], [AS_HELP_STRING([--disable-xml], [Disable support for xml (evtest-capture)])])
-AS_IF([test "x$enable_xml" != "xno"], [
-	PKG_CHECK_MODULES(XML, libxml-2.0, [HAVE_LIBXML=yes], [HAVE_LIBXML=no])
-	AS_IF([test "x$enable_xml$HAVE_LIBXML" = "xyesno"], [
-		AC_MSG_ERROR([libxml headers not available. Cannot build evtest-capture.])
-	])
-])
-AM_CONDITIONAL(HAVE_LIBXML, [test "x$HAVE_LIBXML" = "xyes"])
-
 AC_PATH_PROG(XSLTPROC, [xsltproc])
 AM_CONDITIONAL([HAVE_XSLTPROC], [test "x$XSLTPROC" != "x"])
 if test "x$XSLTPROC" = "x"; then
