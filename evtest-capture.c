@@ -52,6 +52,19 @@
 #define format(...) call(xmlTextWriterWriteFormatElement(writer, __VA_ARGS__))
 #define attr(...) call(xmlTextWriterWriteAttribute(writer, __VA_ARGS__))
 
+#ifndef ABS_MT_SLOT
+#define ABS_MT_SLOT 0x2f
+#endif
+
+#ifndef ABS_MT_PRESSURE
+#define ABS_MT_PRESSURE 0x3a
+#endif
+
+#ifndef BTN_TOOL_QUADTAP
+#define BTN_TOOL_QUADTAP 0x14f
+#define BTN_TOOL_QINTTAP 0x148
+#endif
+
 static int stop = 0;
 
 const char *keys[KEY_MAX + 1] = {
@@ -399,6 +412,8 @@ const char *keys[KEY_MAX + 1] = {
 	[BTN_TOOL_DOUBLETAP] = "BTN_TOOL_DOUBLETAP",
 
 	[BTN_TOOL_TRIPLETAP] = "BTN_TOOL_TRIPLETAP",
+	[BTN_TOOL_QUADTAP] = "BTN_TOOL_QUADTAP",
+	[BTN_TOOL_QUINTTAP] = "BTN_TOOL_QUINTTAP",
 	[BTN_GEAR_DOWN] = "BTN_GEAR_DOWN",
 
 	[BTN_GEAR_UP] = "BTN_GEAR_UP",
@@ -561,6 +576,7 @@ const char *absolutes[ABS_MAX + 1] = {
 	[ABS_TOOL_WIDTH] = "ABS_TOOL_WIDTH",
 	[ABS_VOLUME] = "ABS_VOLUME",
 	[ABS_MISC] = "ABS_MISC",
+	[ABS_MT_SLOT] = "ABS_MT_SLOT",
 	[ABS_MT_TOUCH_MAJOR] = "ABS_MT_TOUCH_MAJOR",
 	[ABS_MT_TOUCH_MINOR] = "ABS_MT_TOUCH_MINOR",
 	[ABS_MT_WIDTH_MAJOR] = "ABS_MT_WIDTH_MAJOR",
@@ -571,6 +587,7 @@ const char *absolutes[ABS_MAX + 1] = {
 	[ABS_MT_TOOL_TYPE] = "ABS_MT_TOOL_TYPE",
 	[ABS_MT_BLOB_ID] = "ABS_MT_BLOB_ID",
 	[ABS_MT_TRACKING_ID] = "ABS_MT_TRACKING_ID",
+	[ABS_MT_PRESSURE] = "ABS_MT_PRESSURE",
 };
 
 const char *misc[MSC_MAX + 1] = {
