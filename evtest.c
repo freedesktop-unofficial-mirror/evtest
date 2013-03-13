@@ -729,6 +729,20 @@ static void print_absdata(int fd, int axis)
 			printf("      %s %6d\n", absval[k], abs[k]);
 }
 
+static void print_repdata(int fd)
+{
+	int i;
+	unsigned int rep[2];
+
+	ioctl(fd, EVIOCGREP, rep);
+
+	for (i = 0; i <= REP_MAX; i++) {
+		printf("    Property code %d (%s)\n", i, names[EV_REP] ? (names[EV_REP][i] ? names[EV_REP][i] : "?") : "?");
+		printf("      Value %6d\n", rep[i]);
+	}
+
+}
+
 /**
  * Print static device information (no events). This information includes
  * version numbers, device name and all bits supported by this device.
@@ -767,7 +781,7 @@ static int print_device_info(int fd)
 	printf("Supported events:\n");
 
 	for (i = 0; i < EV_MAX; i++)
-		if (test_bit(i, bit[0])) {
+		if (test_bit(i, bit[0]) && i != EV_REP) {
 			printf("  Event type %d (%s)\n", i, events[i] ? events[i] : "?");
 			if (!i) continue;
 			ioctl(fd, EVIOCGBIT(i, KEY_MAX), bit[i]);
@@ -783,6 +797,10 @@ static int print_device_info(int fd)
 	memset(propbits, 0, sizeof(propbits));
 	ioctl(fd, EVIOCGPROP(sizeof(propbits)), propbits);
 	printf("Properties:\n");
+	if (test_bit(EV_REP, bit[0])) {
+		printf("  Property type %d (%s)\n", EV_REP, events[EV_REP] ?  events[EV_REP] : "?");
+		print_repdata(fd);
+	}
 	for (i = 0; i < INPUT_PROP_MAX; i++) {
 		if (test_bit(i, propbits))
 			printf("  Property type %d (%s)\n", i, props[i] ?  props[i] : "?");
