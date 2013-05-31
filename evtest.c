@@ -643,7 +643,7 @@ static char* scan_devices(void)
 	int i, ndev, devnum;
 	char *filename;
 
-	ndev = scandir(DEV_INPUT_EVENT, &namelist, is_event_device, alphasort);
+	ndev = scandir(DEV_INPUT_EVENT, &namelist, is_event_device, versionsort);
 	if (ndev <= 0)
 		return NULL;
 
