@@ -1,5 +1,5 @@
 AC_PREREQ([2.57])
-AC_INIT(evtest,[1.30], [https://bugzilla.freedesktop.org/enter_bug.cgi?product=evtest], evtest)
+AC_INIT(evtest,[1.31], [https://bugzilla.freedesktop.org/enter_bug.cgi?product=evtest], evtest)
 AM_INIT_AUTOMAKE([foreign dist-bzip2])
 
 AC_CONFIG_HEADERS(config.h)
