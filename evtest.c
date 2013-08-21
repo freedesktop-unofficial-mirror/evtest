@@ -790,7 +790,7 @@ static int print_device_info(int fd)
 	for (type = 0; type < EV_MAX; type++) {
 		if (test_bit(type, bit[0]) && type != EV_REP) {
 			printf("  Event type %d (%s)\n", type, events[type] ? events[type] : "?");
-			if (!type) continue;
+			if (type == EV_SYN) continue;
 			ioctl(fd, EVIOCGBIT(type, KEY_MAX), bit[type]);
 			for (code = 0; code < KEY_MAX; code++)
 				if (test_bit(code, bit[type])) {
