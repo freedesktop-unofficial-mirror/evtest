@@ -787,7 +787,7 @@ static int print_device_info(int fd)
 	ioctl(fd, EVIOCGBIT(0, EV_MAX), bit[0]);
 	printf("Supported events:\n");
 
-	for (i = 0; i < EV_MAX; i++)
+	for (i = 0; i < EV_MAX; i++) {
 		if (test_bit(i, bit[0]) && i != EV_REP) {
 			printf("  Event type %d (%s)\n", i, events[i] ? events[i] : "?");
 			if (!i) continue;
@@ -799,6 +799,7 @@ static int print_device_info(int fd)
 						print_absdata(fd, j);
 				}
 		}
+	}
 
 #ifdef INPUT_PROP_SEMI_MT
 	memset(propbits, 0, sizeof(propbits));
