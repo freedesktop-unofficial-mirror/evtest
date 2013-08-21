@@ -759,7 +759,7 @@ static void print_repdata(int fd)
  */
 static int print_device_info(int fd)
 {
-	int i, j;
+	unsigned int type, code, prop;
 	int version;
 	unsigned short id[4];
 	char name[256] = "Unknown";
@@ -787,16 +787,16 @@ static int print_device_info(int fd)
 	ioctl(fd, EVIOCGBIT(0, EV_MAX), bit[0]);
 	printf("Supported events:\n");
 
-	for (i = 0; i < EV_MAX; i++) {
-		if (test_bit(i, bit[0]) && i != EV_REP) {
-			printf("  Event type %d (%s)\n", i, events[i] ? events[i] : "?");
-			if (!i) continue;
-			ioctl(fd, EVIOCGBIT(i, KEY_MAX), bit[i]);
-			for (j = 0; j < KEY_MAX; j++)
-				if (test_bit(j, bit[i])) {
-					printf("    Event code %d (%s)\n", j, names[i] ? (names[i][j] ? names[i][j] : "?") : "?");
-					if (i == EV_ABS)
-						print_absdata(fd, j);
+	for (type = 0; type < EV_MAX; type++) {
+		if (test_bit(type, bit[0]) && type != EV_REP) {
+			printf("  Event type %d (%s)\n", type, events[type] ? events[type] : "?");
+			if (!type) continue;
+			ioctl(fd, EVIOCGBIT(type, KEY_MAX), bit[type]);
+			for (code = 0; code < KEY_MAX; code++)
+				if (test_bit(code, bit[type])) {
+					printf("    Event code %d (%s)\n", code, names[type] ? (names[type][code] ? names[type][code] : "?") : "?");
+					if (type == EV_ABS)
+						print_absdata(fd, code);
 				}
 		}
 	}
@@ -809,9 +809,9 @@ static int print_device_info(int fd)
 		printf("  Property type %d (%s)\n", EV_REP, events[EV_REP] ?  events[EV_REP] : "?");
 		print_repdata(fd);
 	}
-	for (i = 0; i < INPUT_PROP_MAX; i++) {
-		if (test_bit(i, propbits))
-			printf("  Property type %d (%s)\n", i, props[i] ?  props[i] : "?");
+	for (prop = 0; prop < INPUT_PROP_MAX; prop++) {
+		if (test_bit(prop, propbits))
+			printf("  Property type %d (%s)\n", prop, props[prop] ? props[prop] : "?");
 	}
 #endif
 
