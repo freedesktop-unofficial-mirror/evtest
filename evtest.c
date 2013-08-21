@@ -169,6 +169,22 @@ static const char * const events[EV_MAX + 1] = {
 	NAME_ELEMENT(EV_FF_STATUS),		NAME_ELEMENT(EV_SW),
 };
 
+static const int maxval[EV_MAX + 1] = {
+	[0 ... EV_MAX] = -1,
+	[EV_SYN] = SYN_MAX,
+	[EV_KEY] = KEY_MAX,
+	[EV_REL] = REL_MAX,
+	[EV_ABS] = ABS_MAX,
+	[EV_MSC] = MSC_MAX,
+	[EV_SW] = SW_MAX,
+	[EV_LED] = LED_MAX,
+	[EV_SND] = SND_MAX,
+	[EV_REP] = REP_MAX,
+	[EV_FF] = FF_MAX,
+	[EV_FF_STATUS] = FF_STATUS_MAX,
+};
+
+
 #ifdef INPUT_PROP_SEMI_MT
 static const char * const props[INPUT_PROP_MAX + 1] = {
 	[0 ... INPUT_PROP_MAX] = NULL,
@@ -750,6 +766,21 @@ static void print_repdata(int fd)
 
 }
 
+static inline const char* typename(unsigned int type)
+{
+	return (type <= EV_MAX && events[type]) ? events[type] : "?";
+}
+
+static inline const char* codename(unsigned int type, unsigned int code)
+{
+	return (type <= EV_MAX && code <= maxval[type] && names[type] && names[type][code]) ? names[type][code] : "?";
+}
+
+static inline const char* propname(unsigned int prop)
+{
+	return (prop <= INPUT_PROP_MAX && props[prop]) ? props[prop] : "?";
+}
+
 /**
  * Print static device information (no events). This information includes
  * version numbers, device name and all bits supported by this device.
@@ -789,12 +820,12 @@ static int print_device_info(int fd)
 
 	for (type = 0; type < EV_MAX; type++) {
 		if (test_bit(type, bit[0]) && type != EV_REP) {
-			printf("  Event type %d (%s)\n", type, events[type] ? events[type] : "?");
+			printf("  Event type %d (%s)\n", type, typename(type));
 			if (type == EV_SYN) continue;
 			ioctl(fd, EVIOCGBIT(type, KEY_MAX), bit[type]);
 			for (code = 0; code < KEY_MAX; code++)
 				if (test_bit(code, bit[type])) {
-					printf("    Event code %d (%s)\n", code, names[type] ? (names[type][code] ? names[type][code] : "?") : "?");
+					printf("    Event code %d (%s)\n", code, codename(type, code));
 					if (type == EV_ABS)
 						print_absdata(fd, code);
 				}
@@ -811,7 +842,7 @@ static int print_device_info(int fd)
 	}
 	for (prop = 0; prop < INPUT_PROP_MAX; prop++) {
 		if (test_bit(prop, propbits))
-			printf("  Property type %d (%s)\n", prop, props[prop] ? props[prop] : "?");
+			printf("  Property type %d (%s)\n", prop, propname(prop));
 	}
 #endif
 
@@ -848,15 +879,13 @@ static int print_events(int fd)
 
 			if (type == EV_SYN) {
 				if (code == SYN_MT_REPORT)
-					printf("++++++++++++++ %s ++++++++++++\n", syns[code]);
+					printf("++++++++++++++ %s ++++++++++++\n", codename(type, code));
 				else
-					printf("-------------- %s ------------\n", syns[code]);
+					printf("-------------- %s ------------\n", codename(type, code));
 			} else {
 				printf("type %d (%s), code %d (%s), ",
-					type,
-					events[type] ? events[type] : "?",
-					code,
-					names[type] ? (names[type][code] ? names[type][code] : "?") : "?");
+					type, typename(type),
+					code, codename(type, code));
 				if (type == EV_MSC && (code == MSC_RAW || code == MSC_SCAN))
 					printf("value %02x\n", ev[i].value);
 				else
