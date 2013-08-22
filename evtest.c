@@ -760,7 +760,7 @@ static void print_repdata(int fd)
 	ioctl(fd, EVIOCGREP, rep);
 
 	for (i = 0; i <= REP_MAX; i++) {
-		printf("    Property code %d (%s)\n", i, names[EV_REP] ? (names[EV_REP][i] ? names[EV_REP][i] : "?") : "?");
+		printf("    Repeat code %d (%s)\n", i, names[EV_REP] ? (names[EV_REP][i] ? names[EV_REP][i] : "?") : "?");
 		printf("      Value %6d\n", rep[i]);
 	}
 
@@ -832,14 +832,15 @@ static int print_device_info(int fd)
 		}
 	}
 
+	if (test_bit(EV_REP, bit[0])) {
+		printf("Key repeat handling:\n");
+		printf("  Repeat type %d (%s)\n", EV_REP, events[EV_REP] ?  events[EV_REP] : "?");
+		print_repdata(fd);
+	}
 #ifdef INPUT_PROP_SEMI_MT
 	memset(propbits, 0, sizeof(propbits));
 	ioctl(fd, EVIOCGPROP(sizeof(propbits)), propbits);
 	printf("Properties:\n");
-	if (test_bit(EV_REP, bit[0])) {
-		printf("  Property type %d (%s)\n", EV_REP, events[EV_REP] ?  events[EV_REP] : "?");
-		print_repdata(fd);
-	}
 	for (prop = 0; prop < INPUT_PROP_MAX; prop++) {
 		if (test_bit(prop, propbits))
 			printf("  Property type %d (%s)\n", prop, propname(prop));
