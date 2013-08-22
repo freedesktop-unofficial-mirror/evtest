@@ -528,9 +528,7 @@ static const char * const sounds[SND_MAX + 1] = {
 static const char * const syns[3] = {
 	NAME_ELEMENT(SYN_REPORT),
 	NAME_ELEMENT(SYN_CONFIG),
-#ifdef SYN_MT_REPORT
 	NAME_ELEMENT(SYN_MT_REPORT)
-#endif
 };
 
 static const char * const switches[SW_MAX + 1] = {
