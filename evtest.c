@@ -76,6 +76,9 @@
 #ifndef SYN_MT_REPORT
 #define SYN_MT_REPORT 2
 #endif
+#ifndef SYN_DROPPED
+#define SYN_DROPPED 3
+#endif
 
 #define NAME_ELEMENT(element) [element] = #element
 
@@ -533,7 +536,8 @@ static const char * const syns[SYN_MAX + 1] = {
 	[0 ... SYN_MAX] = NULL,
 	NAME_ELEMENT(SYN_REPORT),
 	NAME_ELEMENT(SYN_CONFIG),
-	NAME_ELEMENT(SYN_MT_REPORT)
+	NAME_ELEMENT(SYN_MT_REPORT),
+	NAME_ELEMENT(SYN_DROPPED)
 };
 
 static const char * const switches[SW_MAX + 1] = {
