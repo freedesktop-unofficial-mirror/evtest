@@ -69,6 +69,10 @@
 #ifndef EV_SYN
 #define EV_SYN 0
 #endif
+#ifndef SYN_MAX
+#define SYN_MAX 3
+#define SYN_CNT (SYN_MAX + 1)
+#endif
 #ifndef SYN_MT_REPORT
 #define SYN_MT_REPORT 2
 #endif
@@ -525,7 +529,8 @@ static const char * const sounds[SND_MAX + 1] = {
 	NAME_ELEMENT(SND_TONE)
 };
 
-static const char * const syns[3] = {
+static const char * const syns[SYN_MAX + 1] = {
+	[0 ... SYN_MAX] = NULL,
 	NAME_ELEMENT(SYN_REPORT),
 	NAME_ELEMENT(SYN_CONFIG),
 	NAME_ELEMENT(SYN_MT_REPORT)
