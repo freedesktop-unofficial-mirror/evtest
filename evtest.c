@@ -795,10 +795,12 @@ static inline const char* codename(unsigned int type, unsigned int code)
 	return (type <= EV_MAX && code <= maxval[type] && names[type] && names[type][code]) ? names[type][code] : "?";
 }
 
+#ifdef INPUT_PROP_SEMI_MT
 static inline const char* propname(unsigned int prop)
 {
 	return (prop <= INPUT_PROP_MAX && props[prop]) ? props[prop] : "?";
 }
+#endif
 
 /**
  * Print static device information (no events). This information includes
