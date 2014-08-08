@@ -48,6 +48,11 @@ when debugging a synaptics device from within X. VT switching to a TTY or
 shutting down the X server terminates this grab and synaptics devices can be
 debugged.
 
+The following command shows the processes with an open file descriptor on
+the device:
+
+   fuser -v /dev/input/eventX
+
 EXIT CODE
 ---------
 evtest returns 1 on error.

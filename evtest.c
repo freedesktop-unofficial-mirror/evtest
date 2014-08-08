@@ -973,8 +973,6 @@ static int do_capture(const char *device)
 		return EXIT_FAILURE;
 	}
 
-	free(filename);
-
 	if (!isatty(fileno(stdout)))
 		setbuf(stdout, NULL);
 
@@ -991,8 +989,13 @@ static int do_capture(const char *device)
 		       "  other grab is active.\n");
 		printf("  In most cases, this is caused by an X driver,\n"
 		       "  try VT-switching and re-run evtest again.\n");
+		printf("  Run the following command to see processes with\n"
+		       "  an open fd on this device\n"
+		       " \"fuser -v %s\"\n", filename);
 		printf("***********************************************\n");
 	}
+
+	free(filename);
 
 	return print_events(fd);
 }
