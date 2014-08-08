@@ -946,7 +946,7 @@ static int test_grab(int fd)
 static int do_capture(const char *device)
 {
 	int fd;
-	char *filename;
+	char *filename = NULL;
 
 	if (!device) {
 		fprintf(stderr, "No device specified, trying to scan all of %s/%s*\n",
@@ -970,14 +970,14 @@ static int do_capture(const char *device)
 			fprintf(stderr, "You do not have access to %s. Try "
 					"running as root instead.\n",
 					filename);
-		return EXIT_FAILURE;
+		goto error;
 	}
 
 	if (!isatty(fileno(stdout)))
 		setbuf(stdout, NULL);
 
 	if (print_device_info(fd))
-		return EXIT_FAILURE;
+		goto error;
 
 	printf("Testing ... (interrupt to exit)\n");
 
@@ -998,6 +998,10 @@ static int do_capture(const char *device)
 	free(filename);
 
 	return print_events(fd);
+
+error:
+	free(filename);
+	return EXIT_FAILURE;
 }
 
 /**
