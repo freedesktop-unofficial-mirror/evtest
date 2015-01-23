@@ -55,6 +55,10 @@
 #include <errno.h>
 #include <getopt.h>
 #include <ctype.h>
+#include <signal.h>
+#include <sys/time.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 #define BITS_PER_LONG (sizeof(long) * 8)
 #define NBITS(x) ((((x)-1)/BITS_PER_LONG)+1)
@@ -99,6 +103,14 @@ static const struct query_mode {
 	{ "EV_SND", EV_SND, SND_MAX, EVIOCGSND(SND_MAX) },
 	{ "EV_SW",  EV_SW, SW_MAX, EVIOCGSW(SW_MAX) },
 };
+
+static int grab_flag = 0;
+static volatile sig_atomic_t stop = 0;
+
+static void interrupt_handler(int sig)
+{
+	stop = 1;
+}
 
 /**
  * Look up an entry in the query_modes table by its textual name.
@@ -744,8 +756,9 @@ static int version(void)
 static int usage(void)
 {
 	printf("USAGE:\n");
-	printf(" Grab mode:\n");
-	printf("   %s /dev/input/eventX\n", program_invocation_short_name);
+	printf(" Capture mode:\n");
+	printf("   %s [--grab] /dev/input/eventX\n", program_invocation_short_name);
+	printf("     --grab  grab the device for exclusive access\n");
 	printf("\n");
 	printf(" Query mode: (check exit code)\n");
 	printf("   %s --query /dev/input/eventX <type> <value>\n",
@@ -887,8 +900,15 @@ static int print_events(int fd)
 {
 	struct input_event ev[64];
 	int i, rd;
+	fd_set rdfs;
 
-	while (1) {
+	FD_ZERO(&rdfs);
+	FD_SET(fd, &rdfs);
+
+	while (!stop) {
+		select(fd + 1, &rdfs, NULL, NULL, NULL);
+		if (stop)
+			break;
 		rd = read(fd, ev, sizeof(struct input_event) * 64);
 
 		if (rd < (int) sizeof(struct input_event)) {
@@ -922,6 +942,9 @@ static int print_events(int fd)
 		}
 
 	}
+
+	ioctl(fd, EVIOCGRAB, (void*)0);
+	return EXIT_SUCCESS;
 }
 
 /**
@@ -930,13 +953,13 @@ static int print_events(int fd)
  * @param fd The file descriptor to the device.
  * @return 0 if the grab was successful, or 1 otherwise.
  */
-static int test_grab(int fd)
+static int test_grab(int fd, int grab_flag)
 {
 	int rc;
 
 	rc = ioctl(fd, EVIOCGRAB, (void*)1);
 
-	if (!rc)
+	if (rc == 0 && !grab_flag)
 		ioctl(fd, EVIOCGRAB, (void*)0);
 
 	return rc;
@@ -949,7 +972,7 @@ static int test_grab(int fd)
  * @param device The device to monitor, or NULL if the user should be prompted.
  * @return 0 on success, non-zero on error.
  */
-static int do_capture(const char *device)
+static int do_capture(const char *device, int grab_flag)
 {
 	int fd;
 	char *filename = NULL;
@@ -987,7 +1010,7 @@ static int do_capture(const char *device)
 
 	printf("Testing ... (interrupt to exit)\n");
 
-	if (test_grab(fd))
+	if (test_grab(fd, grab_flag))
 	{
 		printf("***********************************************\n");
 		printf("  This device is grabbed by another process.\n");
@@ -1000,6 +1023,9 @@ static int do_capture(const char *device)
 		       " \"fuser -v %s\"\n", filename);
 		printf("***********************************************\n");
 	}
+
+	signal(SIGINT, interrupt_handler);
+	signal(SIGTERM, interrupt_handler);
 
 	free(filename);
 
@@ -1083,6 +1109,7 @@ static int do_query(const char *device, const char *event_type, const char *keyn
 }
 
 static const struct option long_options[] = {
+	{ "grab", no_argument, &grab_flag, 1 },
 	{ "query", no_argument, NULL, MODE_QUERY },
 	{ "version", no_argument, NULL, MODE_VERSION },
 	{ 0, },
@@ -1101,6 +1128,8 @@ int main (int argc, char **argv)
 		if (c == -1)
 			break;
 		switch (c) {
+		case 0:
+			break;
 		case MODE_QUERY:
 			mode = c;
 			break;
@@ -1115,7 +1144,7 @@ int main (int argc, char **argv)
 		device = argv[optind++];
 
 	if (mode == MODE_CAPTURE)
-		return do_capture(device);
+		return do_capture(device, grab_flag);
 
 	if ((argc - optind) < 2) {
 		fprintf(stderr, "Query mode requires device, type and key parameters\n");

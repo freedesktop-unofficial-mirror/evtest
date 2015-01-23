@@ -8,7 +8,7 @@ NAME
 
 SYNOPSIS
 --------
-     evtest /dev/input/eventX
+     evtest [--grab] /dev/input/eventX
 
      evtest --query /dev/input/eventX <type> <value>
 
@@ -18,6 +18,10 @@ The first invocation type displayed above ("capture mode") causes evtest to
 display information about the specified input device, including all the events
 supported by the device. It then monitors the device and displays all the
 events layer events generated.
+
+If the --grab flag is given in capture mode, evtest keeps an EVIOCGRAB on the
+device. While this grab is active, other processes will not receive events
+from the kernel devices. The grab is released again when evtest quits.
 
 In the second invocation type ("query mode"), evtest performs a one-shot query
 of the state of a specific key *value* of an event *type*.
