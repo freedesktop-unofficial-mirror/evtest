@@ -684,6 +684,7 @@ static char* scan_devices(void)
 	struct dirent **namelist;
 	int i, ndev, devnum;
 	char *filename;
+	int max_device = 0;
 
 	ndev = scandir(DEV_INPUT_EVENT, &namelist, is_event_device, versionsort);
 	if (ndev <= 0)
@@ -706,13 +707,18 @@ static char* scan_devices(void)
 
 		fprintf(stderr, "%s:	%s\n", fname, name);
 		close(fd);
+
+		sscanf(namelist[i]->d_name, "event%d", &devnum);
+		if (devnum > max_device)
+			max_device = devnum;
+
 		free(namelist[i]);
 	}
 
-	fprintf(stderr, "Select the device event number [0-%d]: ", ndev - 1);
+	fprintf(stderr, "Select the device event number [0-%d]: ", max_device);
 	scanf("%d", &devnum);
 
-	if (devnum >= ndev || devnum < 0)
+	if (devnum > max_device || devnum < 0)
 		return NULL;
 
 	asprintf(&filename, "%s/%s%d",
