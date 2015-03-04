@@ -963,12 +963,13 @@ static inline const char* propname(unsigned int prop)
  */
 static int print_device_info(int fd)
 {
-	unsigned int type, code, prop;
+	unsigned int type, code;
 	int version;
 	unsigned short id[4];
 	char name[256] = "Unknown";
 	unsigned long bit[EV_MAX][NBITS(KEY_MAX)];
 #ifdef INPUT_PROP_SEMI_MT
+	unsigned int prop;
 	unsigned long propbits[INPUT_PROP_MAX];
 #endif
 
