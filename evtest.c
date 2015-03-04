@@ -1043,7 +1043,7 @@ static int print_events(int fd)
 		select(fd + 1, &rdfs, NULL, NULL, NULL);
 		if (stop)
 			break;
-		rd = read(fd, ev, sizeof(struct input_event) * 64);
+		rd = read(fd, ev, sizeof(ev));
 
 		if (rd < (int) sizeof(struct input_event)) {
 			printf("expected %d bytes, got %d\n", (int) sizeof(struct input_event), rd);
