@@ -762,7 +762,7 @@ static const char * const forcestatus[FF_STATUS_MAX + 1] = {
 
 static const char * const * const names[EV_MAX + 1] = {
 	[0 ... EV_MAX] = NULL,
-	[EV_SYN] = events,			[EV_KEY] = keys,
+	[EV_SYN] = syns,			[EV_KEY] = keys,
 	[EV_REL] = relatives,			[EV_ABS] = absolutes,
 	[EV_MSC] = misc,			[EV_LED] = leds,
 	[EV_SND] = sounds,			[EV_REP] = repeats,
