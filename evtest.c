@@ -1062,6 +1062,8 @@ static int print_events(int fd)
 			if (type == EV_SYN) {
 				if (code == SYN_MT_REPORT)
 					printf("++++++++++++++ %s ++++++++++++\n", codename(type, code));
+				else if (code == SYN_DROPPED)
+					printf(">>>>>>>>>>>>>> %s <<<<<<<<<<<<\n", codename(type, code));
 				else
 					printf("-------------- %s ------------\n", codename(type, code));
 			} else {
